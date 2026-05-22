@@ -5,48 +5,104 @@
 
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
-import { 
-  Terminal, 
-  Database, 
-  Cloud, 
-  ArrowUpRight, 
-  Github, 
-  Linkedin, 
-  Mail, 
+import {
+  ArrowUpRight,
+  Github,
+  Linkedin,
+  Mail,
   Code2,
   Users,
   BarChart3,
-  ArrowRight
+  BookOpen,
 } from "lucide-react";
 
+// ─── Animation Variants ────────────────────────────────────────────────────────
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.7,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+// ─── Typewriter ────────────────────────────────────────────────────────────────
+
+const Typewriter = ({ texts }: { texts: string[] }) => {
+  const [index, setIndex] = useState(0);
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [speed, setSpeed] = useState(120);
+
+  useEffect(() => {
+    const handleType = () => {
+      const currentText = texts[index];
+      if (isDeleting) {
+        setDisplayText(currentText.substring(0, displayText.length - 1));
+        setSpeed(40);
+      } else {
+        setDisplayText(currentText.substring(0, displayText.length + 1));
+        setSpeed(120);
+      }
+      if (!isDeleting && displayText === currentText) {
+        setTimeout(() => setIsDeleting(true), 2400);
+      } else if (isDeleting && displayText === "") {
+        setIsDeleting(false);
+        setIndex((prev) => (prev + 1) % texts.length);
+      }
+    };
+    const timer = setTimeout(handleType, speed);
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, index, texts, speed]);
+
+  return (
+    <span className="text-primary font-label">
+      {displayText}
+      <span className="inline-block w-0.5 h-[0.8em] bg-primary ml-0.5 align-middle animate-pulse" />
+    </span>
+  );
+};
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
+
 const Navbar = () => {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>("about");
 
   useEffect(() => {
     const sections = ["about", "experience", "education", "projects", "skills"];
-    
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight / 2;
-      
-      let currentSection = null;
-      
-      // Find which section is currently centered
+      let currentSection: string | null = null;
+
       for (const id of sections) {
-        const element = document.getElementById(id);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          // We only highlight if the center of the screen is within the section
-          // AND we are not in a "transition zone" (e.g. within 150px of a boundary)
-          // This ensures the highlight clears when between sections as requested
-          const buffer = 150; 
-          if (scrollPosition >= offsetTop + buffer && scrollPosition < offsetTop + offsetHeight - buffer) {
+        const el = document.getElementById(id);
+        if (el) {
+          const { offsetTop, offsetHeight } = el;
+          const buffer = 150;
+          if (
+            scrollPosition >= offsetTop + buffer &&
+            scrollPosition < offsetTop + offsetHeight - buffer
+          ) {
             currentSection = id;
             break;
           }
         }
       }
 
-      // Special handling for top and bottom
       if (window.scrollY < 100) {
         setActiveSection("about");
       } else if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
@@ -57,7 +113,7 @@ const Navbar = () => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial check
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -71,326 +127,404 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-nav border-b border-on-surface/5">
-      <div className="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
-        <div className="flex flex-col leading-none">
-          <span className="text-xl font-black tracking-tighter text-on-surface">Shashwat Tiwari</span>
-          <span className="font-label text-[9px] uppercase tracking-[0.3em] text-primary font-bold mt-1">portfolio</span>
-        </div>
-        <div className="hidden md:flex gap-12 items-center font-medium text-sm tracking-tight">
+      <div className="flex justify-between items-center max-w-7xl mx-auto px-8 h-16">
+        <a
+          href="#about"
+          className="font-label font-bold text-on-surface tracking-tight text-base hover:text-primary transition-colors duration-200"
+        >
+          Shashwat Tiwari
+        </a>
+
+        <div className="hidden md:flex gap-9 items-center">
           {navLinks.map((link) => (
-            <a 
+            <a
               key={link.id}
               href={`#${link.id}`}
-              className={`relative py-2 transition-all duration-300 ${
-                activeSection === link.id 
-                  ? "text-primary font-bold" 
-                  : "text-on-surface opacity-70 hover:opacity-100 hover:text-primary"
+              className={`relative py-1 text-sm font-label font-medium tracking-wide transition-colors duration-200 ${
+                activeSection === link.id
+                  ? "text-primary"
+                  : "text-on-surface/45 hover:text-on-surface"
               }`}
             >
               {link.label}
               {activeSection === link.id && (
-                <motion.div 
+                <motion.div
                   layoutId="activeNav"
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                  className="absolute -bottom-px left-0 right-0 h-px bg-primary"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
             </a>
           ))}
         </div>
-        <a 
-          href="https://www.linkedin.com/in/shashwat-tiwari118/" 
-          target="_blank" 
+
+        <a
+          href="https://www.linkedin.com/in/shashwat-tiwari118/"
+          target="_blank"
           rel="noopener noreferrer"
-          className="bg-gradient-to-br from-primary to-primary-container text-white px-6 py-2.5 rounded-md font-label text-sm font-bold tracking-wide scale-95 active:scale-90 transition-transform inline-block"
+          className="font-label text-sm font-semibold text-primary border border-primary/30 px-5 py-2 rounded-full hover:bg-primary hover:text-white transition-all duration-200"
         >
-          Resume
+          Resume ↗
         </a>
       </div>
     </nav>
   );
 };
 
-const sectionVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { 
-      duration: 0.8, 
-      ease: [0.22, 1, 0.36, 1],
-      staggerChildren: 0.15
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
-};
-
-const Typewriter = ({ texts }: { texts: string[] }) => {
-  const [index, setIndex] = useState(0);
-  const [displayText, setDisplayText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [speed, setSpeed] = useState(150);
-
-  useEffect(() => {
-    const handleType = () => {
-      const currentText = texts[index];
-      if (isDeleting) {
-        setDisplayText(currentText.substring(0, displayText.length - 1));
-        setSpeed(50);
-      } else {
-        setDisplayText(currentText.substring(0, displayText.length + 1));
-        setSpeed(150);
-      }
-
-      if (!isDeleting && displayText === currentText) {
-        setTimeout(() => setIsDeleting(true), 2000);
-      } else if (isDeleting && displayText === "") {
-        setIsDeleting(false);
-        setIndex((prev) => (prev + 1) % texts.length);
-      }
-    };
-
-    const timer = setTimeout(handleType, speed);
-    return () => clearTimeout(timer);
-  }, [displayText, isDeleting, index, texts, speed]);
-
-  return (
-    <span className="text-primary">
-      {displayText}
-      <span className="border-r-2 border-primary ml-1 animate-pulse"></span>
-    </span>
-  );
-};
+// ─── Hero ─────────────────────────────────────────────────────────────────────
 
 const Hero = () => (
-  <section className="relative px-8 py-20 max-w-7xl mx-auto min-h-[80vh] flex flex-col justify-center bg-bleeding-primary" id="about">
-    <div className="absolute -top-20 -left-20 opacity-5 pointer-events-none">
-      <h1 className="text-[25rem] font-black tracking-tighter select-none">ST</h1>
-    </div>
-    <motion.div 
+  <section
+    className="relative px-8 pt-28 pb-20 max-w-7xl mx-auto min-h-[88vh] flex flex-col justify-center"
+    id="about"
+  >
+    <motion.div
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
+      animate="visible"
       variants={sectionVariants}
-      className="relative z-10 max-w-6xl"
+      className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-16 md:gap-28 items-center"
     >
-      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start md:items-center gap-12 md:gap-20">
-        <motion.div variants={itemVariants} className="min-w-0">
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-black tracking-tighter leading-[1.1] text-on-surface mb-4 md:whitespace-nowrap">
-            I'm a <Typewriter texts={["data analyst.", "software developer.", "designer."]} />
-          </h1>
-          <div className="mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-on-surface-variant tracking-tight">Architecting Intelligence.</h2>
-            <p className="text-lg md:text-xl font-medium text-primary/80">MS CS @ Northeastern University</p>
+      {/* ── Left: text ── */}
+      <motion.div variants={itemVariants}>
+        <div className="inline-flex items-center gap-2 bg-primary/8 text-primary px-3.5 py-1.5 rounded-full font-label text-xs font-semibold tracking-wide mb-10">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          Open to full-time · Summer 2026
+        </div>
+
+        <p className="font-label text-on-surface/35 font-medium tracking-widest text-xs uppercase mb-3">
+          Hi, I'm
+        </p>
+
+        <h1 className="font-label text-6xl md:text-7xl lg:text-[5.5rem] font-bold tracking-tighter text-on-surface leading-[0.93] mb-7">
+          Shashwat
+          <br />
+          Tiwari.
+        </h1>
+
+        <div className="text-xl md:text-2xl font-medium text-on-surface/55 mb-10 font-label h-9">
+          <Typewriter texts={["Data Analyst", "Software Engineer", "ML Builder"]} />
+        </div>
+
+        <p className="text-lg text-on-surface-variant leading-relaxed max-w-[46ch]">
+          I build things that work — and care about why they work. ML pipelines
+          at Bain, CV systems at Aftershoot, and a few projects I'm genuinely
+          proud of in between.
+        </p>
+
+        <div className="mt-10 flex items-center gap-6 flex-wrap">
+          <div>
+            <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-0.5">
+              Based in
+            </span>
+            <span className="font-label font-semibold text-sm text-on-surface">
+              Boston, MA
+            </span>
           </div>
-          <p className="text-xl md:text-2xl text-on-surface-variant leading-relaxed max-w-2xl">
-            I like solving messy problems with clean code and clear data. Whether it's building full-stack applications, automating data pipelines, or turning raw numbers into decisions - I care about making things that work and actually get used. I strive to bring curiosity, persistence, and a fresh perspective to every problem I encounter. Previously at Bain & Company and Aftershoot.
-          </p>
-          <div className="mt-12 flex items-center gap-8">
-            <div className="flex flex-col">
-              <span className="font-label text-xs uppercase tracking-widest text-outline">Location</span>
-              <span className="font-bold text-on-surface">Boston, MA</span>
-            </div>
-            <div className="w-px h-10 bg-outline-variant/30"></div>
-            <div className="flex flex-col">
-              <span className="font-label text-xs uppercase tracking-widest text-outline">Status</span>
-              <span className="font-bold text-on-surface">Available for full time roles from Summer 2026</span>
-            </div>
+          <div className="w-px h-8 bg-outline-variant/40" />
+          <div>
+            <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-0.5">
+              Currently
+            </span>
+            <span className="font-label font-semibold text-sm text-on-surface">
+              MS CS @ Northeastern
+            </span>
           </div>
-        </motion.div>
-        <motion.div variants={itemVariants} className="flex justify-center md:justify-end relative mt-12 md:mt-24">
-          <div className="relative">
-            <div className="absolute -inset-4 bg-primary/10 rounded-full blur-2xl"></div>
-            <img 
-              src={`${import.meta.env.BASE_URL}profile.png`} 
-              alt="Shashwat Tiwari" 
-              className="w-48 h-48 md:w-56 md:h-56 lg:w-64 lg:h-64 object-cover object-[center_22%] rounded-full shadow-2xl relative z-10"
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                // Fallback if image is not found
-                e.currentTarget.src = "https://picsum.photos/seed/shashwat/1000/1000";
-              }}
-            />
+          <div className="w-px h-8 bg-outline-variant/40" />
+          <div>
+            <span className="font-label text-[10px] uppercase tracking-widest text-outline block mb-0.5">
+              Previously
+            </span>
+            <span className="font-label font-semibold text-sm text-on-surface">
+              Bain & Aftershoot
+            </span>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
+
+      {/* ── Right: photo with offset borders ── */}
+      <motion.div variants={itemVariants} className="flex justify-center md:justify-end">
+        <div className="relative group cursor-default">
+          <img
+            src={`${import.meta.env.BASE_URL}profile.png`}
+            alt="Shashwat Tiwari"
+            className="relative z-10 w-52 h-64 md:w-60 md:h-72 object-cover object-[center_22%] rounded-2xl shadow-xl"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              e.currentTarget.src =
+                "https://picsum.photos/seed/shashwat/1000/1000";
+            }}
+          />
+          {/* Orange offset border */}
+          <div className="absolute inset-0 rounded-2xl border-2 border-primary/50 translate-x-2.5 translate-y-2.5 group-hover:translate-x-3 group-hover:translate-y-3 transition-transform duration-300 ease-out" />
+          {/* Purple offset border */}
+          <div className="absolute inset-0 rounded-2xl border border-purple/25 translate-x-5 translate-y-5 group-hover:translate-x-6 group-hover:translate-y-6 transition-transform duration-500 ease-out" />
+        </div>
+      </motion.div>
     </motion.div>
   </section>
 );
 
+// ─── Experience ───────────────────────────────────────────────────────────────
+
 const Experience = () => (
-  <section className="py-32 bg-surface-low relative overflow-hidden" id="experience">
-    <div className="max-w-7xl mx-auto px-8 relative z-10">
-      <motion.div 
+  <section className="py-28 bg-surface-low" id="experience">
+    <div className="max-w-7xl mx-auto px-8">
+      <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={sectionVariants}
-        className="flex justify-between items-end mb-20"
       >
-        <div>
-          <h2 className="text-5xl font-black tracking-tighter mb-4">Experience</h2>
-          <div className="h-1.5 w-24 bg-primary"></div>
-        </div>
-        <span className="font-mono text-sm opacity-40 hidden md:block">0x02 // PROFESSIONAL_LOG</span>
-      </motion.div>
-      
-      <motion.div 
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={sectionVariants}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-12"
-      >
-        {/* Bain & Co */}
-        <motion.div 
+        <motion.div
           variants={itemVariants}
-          whileHover={{ y: -8 }}
-          className="group bg-surface-lowest p-12 rounded-lg relative overflow-hidden transition-all duration-500 hover:shadow-[0_24px_48px_-12px_rgba(204,0,0,0.1)]"
+          className="flex items-end justify-between mb-16"
         >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#cc0000]/5 rounded-bl-full transition-all group-hover:scale-150"></div>
-          <div className="relative z-10">
-            <div className="h-20 mb-8 flex items-center">
-              <img 
-                src={`${import.meta.env.BASE_URL}bain-logo.png`} 
-                alt="Bain & Company" 
-                className="h-full object-contain"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h3 className="text-2xl font-black tracking-tight">Data Analyst Intern</h3>
-                <p className="font-label font-bold tracking-wider text-sm mt-1" style={{ color: '#cc0000' }}>BAIN & COMPANY</p>
-              </div>
-              <span className="font-mono text-xs opacity-50">Jan 2024 — July 2024</span>
-            </div>
-            <p className="text-on-surface-variant mb-8 leading-relaxed">
-              Designed and deployed end-to-end ML pipelines for M&A deal screening across 20–75 datasets, combining K-Means and hierarchical clustering to segment acquisition targets, reducing manual analyst review time by 40%.
-            </p>
-            <ul className="text-sm text-on-surface-variant/80 space-y-3 mb-8 list-disc pl-4">
-              <li>Built time-series forecasting models (ARIMA + XGBoost ensemble) to predict M&A activity signals, improving prospect prioritization accuracy by 18%.</li>
-              <li>Engineered automated SQL + Python (Pandas, SQLAlchemy) ingestion pipelines with schema validation and anomaly-detection hooks.</li>
-              <li>Developed NLP classification models (TF-IDF + Logistic Regression, spaCy NER) for automated document tagging and regulatory text anomaly detection.</li>
-              <li>Applied data validation and testing frameworks (Pytest, Great Expectations) to ensure pipeline reliability and maintain &gt;95% data accuracy.</li>
-            </ul>
-            <div className="flex flex-wrap gap-3">
-              {["Python", "SQLAlchemy", "XGBoost", "NLP", "Pytest"].map(tag => (
-                <span key={tag} className="px-3 py-1 border border-outline-variant/20 font-label text-[10px] uppercase tracking-widest text-on-surface hover:text-[#cc0000] transition-colors cursor-default">
-                  {tag}
-                </span>
-              ))}
-            </div>
+          <div>
+            <span className="font-label text-xs font-semibold tracking-widest text-primary uppercase block mb-3">
+              01
+            </span>
+            <h2 className="font-label text-5xl font-bold tracking-tighter text-on-surface">
+              Experience
+            </h2>
           </div>
+          <span className="font-label text-sm text-on-surface/30 hidden md:block">
+            2023 — 2024
+          </span>
         </motion.div>
 
-        {/* Aftershoot */}
-        <motion.div 
-          variants={itemVariants}
-          whileHover={{ y: -8 }}
-          className="group bg-surface-lowest p-12 rounded-lg relative overflow-visible transition-all duration-500 hover:shadow-[0_24px_48px_-12px_rgba(0,99,151,0.1)]"
-        >
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#006397]/5 rounded-bl-full transition-all group-hover:scale-150"></div>
-          <div className="relative z-10">
-            <div className="mb-8 flex items-center">
-               <img 
-                src={`${import.meta.env.BASE_URL}aftershoot-logo.png`} 
-                alt="Aftershoot" 
-                className="h-16 w-auto object-contain pb-2"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h3 className="text-2xl font-black tracking-tight">Software Engineer Intern</h3>
-                <p className="font-label font-bold tracking-wider text-sm mt-1 uppercase" style={{ color: '#006397' }}>Aftershoot Inc.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Bain & Company */}
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ y: -6 }}
+            className="group bg-surface-lowest rounded-xl relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(204,0,0,0.12)] border border-on-surface/5"
+          >
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#cc0000]/40 group-hover:bg-[#cc0000] rounded-l-xl transition-colors duration-300" />
+            <div className="p-10 pl-12">
+              <div className="h-14 mb-8 flex items-center">
+                <img
+                  src={`${import.meta.env.BASE_URL}bain-logo.png`}
+                  alt="Bain & Company"
+                  className="h-full object-contain"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-              <span className="font-mono text-xs opacity-50">May 2023 — July 2023</span>
+              <div className="mb-5">
+                <h3 className="font-label text-2xl font-bold tracking-tight text-on-surface">
+                  Data Analyst Intern
+                </h3>
+                <div className="flex items-center gap-2.5 mt-1.5">
+                  <span
+                    className="font-label font-semibold text-xs tracking-wider uppercase"
+                    style={{ color: "#cc0000" }}
+                  >
+                    Bain & Company
+                  </span>
+                  <span className="text-outline-variant/50">·</span>
+                  <span className="font-mono text-xs text-on-surface/35">
+                    Jan — Jul 2024
+                  </span>
+                </div>
+              </div>
+              <p className="text-on-surface-variant text-sm leading-relaxed mb-5">
+                End-to-end ML pipelines for M&A deal screening across 20–75
+                datasets — K-Means & hierarchical clustering to segment
+                acquisition targets, reducing manual analyst review time by 40%.
+              </p>
+              <ul className="space-y-2.5 mb-8">
+                {[
+                  "Time-series forecasting (ARIMA + XGBoost) improving prospect prioritization by 18%",
+                  "Automated SQL + Python ingestion pipelines with schema validation & anomaly detection",
+                  "NLP classification (TF-IDF + Logistic Regression, spaCy NER) for document tagging",
+                  "Pytest + Great Expectations testing frameworks, maintaining >95% data accuracy",
+                ].map((b, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2.5 text-sm text-on-surface/65"
+                  >
+                    <span className="mt-[7px] w-1 h-1 rounded-full bg-[#cc0000]/50 shrink-0" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap gap-2">
+                {["Python", "SQLAlchemy", "XGBoost", "NLP", "Pytest"].map(
+                  (tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-surface-low font-label text-[10px] uppercase tracking-widest text-on-surface/45 rounded-md hover:text-[#cc0000] transition-colors cursor-default"
+                    >
+                      {tag}
+                    </span>
+                  )
+                )}
+              </div>
             </div>
-            <p className="text-on-surface-variant mb-8 leading-relaxed">
-              Architected high-throughput data ingestion pipelines in Python to ingest and normalize subscription telemetry from the Stripe API, enabling downstream analytics on customer retention.
-            </p>
-            <ul className="text-sm text-on-surface-variant/80 space-y-3 mb-8 list-disc pl-4">
-              <li>Rewrote core ETL modules from Python to Rust, reducing processing time by 3x and peak memory usage by 45% without infrastructure scaling.</li>
-              <li>Trained and evaluated CNN-based models for blur detection, sharpness scoring, and duplicate identification for photographer workflows.</li>
-              <li>Enhanced image selection features using OpenCV and scikit-image, improving preprocessing accuracy and reducing manual curation effort.</li>
-              <li>Automated CI/CD workflows with Docker and GitHub Actions, cutting deployment time by &gt;60% while standardizing builds.</li>
-            </ul>
-            <div className="flex flex-wrap gap-3">
-              {["Rust", "OpenCV", "Docker", "CNN", "Stripe API"].map(tag => (
-                <span key={tag} className="px-3 py-1 border border-outline-variant/20 font-label text-[10px] uppercase tracking-widest text-on-surface hover:text-[#006397] transition-colors cursor-default">
-                  {tag}
-                </span>
-              ))}
+          </motion.div>
+
+          {/* Aftershoot */}
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ y: -6 }}
+            className="group bg-surface-lowest rounded-xl relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(0,99,151,0.12)] border border-on-surface/5"
+          >
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#006397]/40 group-hover:bg-[#006397] rounded-l-xl transition-colors duration-300" />
+            <div className="p-10 pl-12">
+              <div className="h-14 mb-8 flex items-center">
+                <img
+                  src={`${import.meta.env.BASE_URL}aftershoot-logo.png`}
+                  alt="Aftershoot"
+                  className="h-10 w-auto object-contain"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="mb-5">
+                <h3 className="font-label text-2xl font-bold tracking-tight text-on-surface">
+                  Software Engineer Intern
+                </h3>
+                <div className="flex items-center gap-2.5 mt-1.5">
+                  <span
+                    className="font-label font-semibold text-xs tracking-wider uppercase"
+                    style={{ color: "#006397" }}
+                  >
+                    Aftershoot Inc.
+                  </span>
+                  <span className="text-outline-variant/50">·</span>
+                  <span className="font-mono text-xs text-on-surface/35">
+                    May — Jul 2023
+                  </span>
+                </div>
+              </div>
+              <p className="text-on-surface-variant text-sm leading-relaxed mb-5">
+                High-throughput data ingestion pipelines in Python for Stripe
+                subscription telemetry, enabling downstream customer retention
+                analytics.
+              </p>
+              <ul className="space-y-2.5 mb-8">
+                {[
+                  "ETL rewrite Python → Rust: 3× speed, 45% lower peak memory, zero infrastructure scaling",
+                  "CNN-based models for blur detection, sharpness scoring, and duplicate identification",
+                  "OpenCV & scikit-image enhancements improving preprocessing accuracy",
+                  "CI/CD automation with Docker + GitHub Actions, cutting deployment time >60%",
+                ].map((b, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2.5 text-sm text-on-surface/65"
+                  >
+                    <span className="mt-[7px] w-1 h-1 rounded-full bg-[#006397]/50 shrink-0" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap gap-2">
+                {["Rust", "OpenCV", "Docker", "CNN", "Stripe API"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-surface-low font-label text-[10px] uppercase tracking-widest text-on-surface/45 rounded-md hover:text-[#006397] transition-colors cursor-default"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   </section>
 );
 
+// ─── Education ────────────────────────────────────────────────────────────────
+
 const Education = () => (
-  <section className="py-32 bg-background" id="education">
+  <section className="py-28 bg-background" id="education">
     <div className="max-w-7xl mx-auto px-8">
-      <motion.div 
+      <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={sectionVariants}
       >
-        <motion.div variants={itemVariants} className="flex justify-between items-end mb-20">
+        <motion.div
+          variants={itemVariants}
+          className="flex items-end justify-between mb-16"
+        >
           <div>
-            <h2 className="text-5xl font-black tracking-tighter mb-4">Education</h2>
-            <div className="h-1.5 w-24 bg-secondary"></div>
+            <span className="font-label text-xs font-semibold tracking-widest text-purple uppercase block mb-3">
+              02
+            </span>
+            <h2 className="font-label text-5xl font-bold tracking-tighter text-on-surface">
+              Education
+            </h2>
           </div>
-          <span className="font-mono text-sm opacity-40 hidden md:block">0x03 // ACADEMIC_LOG</span>
         </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+        <div className="divide-y divide-on-surface/8">
           {/* Northeastern */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
-            className="flex gap-8 items-start p-8 rounded-xl bg-surface-low border border-on-surface/5"
+            className="group flex items-center gap-8 py-10 -mx-4 px-4 rounded-xl transition-colors duration-200 hover:bg-surface-low"
           >
-            <img 
+            <img
               src={`${import.meta.env.BASE_URL}NEU.png`}
-              alt="Northeastern University" 
-              className="w-20 h-20 object-contain"
+              alt="Northeastern University"
+              className="w-14 h-14 object-contain shrink-0"
               referrerPolicy="no-referrer"
             />
-            <div>
-              <h3 className="text-2xl font-black tracking-tight">Northeastern University</h3>
-              <p className="font-bold text-sm uppercase tracking-wider mb-2" style={{ color: '#d41c2c' }}>MS Computer Science</p>
-              <p className="text-on-surface-variant text-sm mb-1">GPA: 4.0/4.0</p>
-              <p className="font-mono text-xs opacity-50">Sept 2024 — May 2026</p>
+            <div className="flex-1 flex flex-col md:flex-row md:items-start md:justify-between gap-1">
+              <div>
+                <h3 className="font-label text-xl font-bold tracking-tight text-on-surface">
+                  Northeastern University
+                </h3>
+                <p
+                  className="font-label font-semibold text-xs uppercase tracking-wider mt-1"
+                  style={{ color: "#d41c2c" }}
+                >
+                  MS Computer Science
+                </p>
+              </div>
+              <div className="md:text-right shrink-0 mt-1 md:mt-0">
+                <span className="font-mono text-xs text-on-surface/35 block">
+                  Sept 2024 — May 2026
+                </span>
+                <span className="font-label text-sm font-semibold text-on-surface/70 mt-0.5 block">
+                  GPA 4.0 / 4.0
+                </span>
+              </div>
             </div>
           </motion.div>
 
           {/* Shiv Nadar */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
-            className="flex gap-8 items-start p-8 rounded-xl bg-surface-low border border-on-surface/5"
+            className="group flex items-center gap-8 py-10 -mx-4 px-4 rounded-xl transition-colors duration-200 hover:bg-surface-low"
           >
-            <img 
+            <img
               src={`${import.meta.env.BASE_URL}sn-logo.png`}
-              alt="Shiv Nadar University" 
-              className="w-26 h-20 object-contain"
+              alt="Shiv Nadar University"
+              className="w-14 h-14 object-contain shrink-0"
               referrerPolicy="no-referrer"
             />
-            <div>
-              <h3 className="text-2xl font-black tracking-tight">Shiv Nadar University</h3>
-              <p className="font-bold text-sm uppercase tracking-wider mb-2" style={{ color: '#1270b7' }}>BS Computer Science</p>
-              <p className="text-on-surface-variant text-sm mb-1">GPA: 3.5/4.0</p>
-              <p className="font-mono text-xs opacity-50">Aug 2020 — May 2024</p>
+            <div className="flex-1 flex flex-col md:flex-row md:items-start md:justify-between gap-1">
+              <div>
+                <h3 className="font-label text-xl font-bold tracking-tight text-on-surface">
+                  Shiv Nadar University
+                </h3>
+                <p
+                  className="font-label font-semibold text-xs uppercase tracking-wider mt-1"
+                  style={{ color: "#1270b7" }}
+                >
+                  BS Computer Science
+                </p>
+              </div>
+              <div className="md:text-right shrink-0 mt-1 md:mt-0">
+                <span className="font-mono text-xs text-on-surface/35 block">
+                  Aug 2020 — May 2024
+                </span>
+                <span className="font-label text-sm font-semibold text-on-surface/70 mt-0.5 block">
+                  GPA 3.5 / 4.0
+                </span>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -399,60 +533,84 @@ const Education = () => (
   </section>
 );
 
+// ─── Projects ─────────────────────────────────────────────────────────────────
+
 const Projects = () => (
-  <section className="py-32 bg-surface-low" id="projects">
+  <section className="py-28 bg-surface-low" id="projects">
     <div className="max-w-7xl mx-auto px-8">
-      <motion.div 
+      <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={sectionVariants}
       >
-        <motion.div variants={itemVariants} className="flex items-end justify-between mb-16">
+        <motion.div
+          variants={itemVariants}
+          className="flex items-end justify-between mb-16"
+        >
           <div>
-            <h2 className="text-3xl font-extrabold tracking-tight text-on-surface">Impactful Projects</h2>
-            <div className="h-1.5 w-12 bg-primary mt-2"></div>
+            <span className="font-label text-xs font-semibold tracking-widest text-primary uppercase block mb-3">
+              03
+            </span>
+            <h2 className="font-label text-5xl font-bold tracking-tighter text-on-surface">
+              Projects
+            </h2>
           </div>
-          <p className="hidden md:block font-label text-xs uppercase tracking-widest text-on-surface-variant">Selected Works (2023-2024)</p>
+          <p className="hidden md:block font-label text-sm text-on-surface/30">
+            Selected works
+          </p>
         </motion.div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* RegTranslate */}
-          <motion.div 
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+          {/* RegTranslate — featured */}
+          <motion.div
             variants={itemVariants}
             whileHover={{ y: -5 }}
-            className="md:col-span-7 group relative overflow-hidden bg-surface-lowest rounded-xl transition-all duration-500 hover:shadow-[0_24px_48px_-12px_rgba(26,28,30,0.06)] border border-on-surface/5"
+            className="md:col-span-7 group relative overflow-hidden bg-surface-lowest rounded-xl transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(255,94,0,0.12)] border border-on-surface/5"
           >
-            <div className="p-10 flex flex-col h-full min-h-[450px]">
+            <div className="h-[3px] bg-gradient-to-r from-primary to-primary/20" />
+            <div className="p-10 flex flex-col min-h-[420px]">
               <div className="flex-grow">
-                <div className="mb-8 flex justify-between items-start">
-                  <Code2 className="text-primary w-10 h-10" />
-                  <a 
-                    className="text-on-surface-variant hover:text-primary transition-colors" 
+                <div className="mb-6 flex justify-between items-start">
+                  <Code2 className="text-primary w-7 h-7" />
+                  <a
+                    className="text-on-surface/25 hover:text-primary transition-colors"
                     href="https://regtranslate.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ArrowUpRight className="w-6 h-6" />
+                    <ArrowUpRight className="w-5 h-5" />
                   </a>
                 </div>
-                <h3 className="text-4xl font-black tracking-tighter text-on-surface mb-4">RegTranslate</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
-                  A RAG-based compliance platform that converts complex regulatory PDFs (HIPAA, GDPR) into actionable developer tasks (Jira tickets) using Llama 3 and LangChain. Features a semantic search pipeline using ChromaDB for high-accuracy context retrieval.
+                <h3 className="font-label text-4xl font-bold tracking-tighter text-on-surface mb-4">
+                  RegTranslate
+                </h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed">
+                  A RAG-based compliance platform that converts complex
+                  regulatory PDFs (HIPAA, GDPR) into actionable developer tasks
+                  using Llama 3 and LangChain. Semantic search pipeline via
+                  ChromaDB for high-accuracy context retrieval.
                 </p>
               </div>
-              <div className="mt-auto">
-                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Core Technology</p>
+              <div className="mt-8">
+                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface/25 mb-3">
+                  Stack
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { name: "Llama 3", color: "bg-primary" },
-                    { name: "LangChain", color: "bg-secondary" },
-                    { name: "ChromaDB", color: "bg-tertiary" },
-                    { name: "FastAPI", color: "bg-primary" }
-                  ].map(tech => (
-                    <div key={tech.name} className={`px-3 py-1.5 rounded-md border border-outline-variant/20 flex items-center gap-2 transition-colors`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${tech.color}`}></span>
-                      <span className="font-label text-xs text-on-surface-variant">{tech.name}</span>
+                    { name: "Llama 3", dot: "bg-primary" },
+                    { name: "LangChain", dot: "bg-purple" },
+                    { name: "ChromaDB", dot: "bg-tertiary" },
+                    { name: "FastAPI", dot: "bg-primary" },
+                  ].map((tech) => (
+                    <div
+                      key={tech.name}
+                      className="px-3 py-1.5 rounded-lg bg-surface-low flex items-center gap-2"
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${tech.dot}`} />
+                      <span className="font-label text-xs text-on-surface/55">
+                        {tech.name}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -461,40 +619,52 @@ const Projects = () => (
           </motion.div>
 
           {/* MuseBot */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             whileHover={{ y: -5 }}
-            className="md:col-span-5 group relative overflow-hidden bg-surface-low rounded-xl transition-all duration-500 hover:bg-surface-lowest hover:shadow-[0_24px_48px_-12px_rgba(26,28,30,0.06)] border border-on-surface/5"
+            className="md:col-span-5 group relative overflow-hidden bg-surface-lowest rounded-xl transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(123,79,160,0.14)] border border-on-surface/5"
           >
-            <div className="p-10 flex flex-col h-full min-h-[450px]">
+            <div className="h-[3px] bg-gradient-to-r from-purple to-purple/20" />
+            <div className="p-10 flex flex-col min-h-[420px]">
               <div className="flex-grow">
-                <div className="mb-8 flex justify-between items-start">
-                  <Users className="text-secondary w-10 h-10" />
-                  <a 
-                    className="text-on-surface-variant hover:text-secondary transition-colors" 
+                <div className="mb-6 flex justify-between items-start">
+                  <Users className="text-purple w-7 h-7" />
+                  <a
+                    className="text-on-surface/25 hover:text-purple transition-colors"
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ArrowUpRight className="w-6 h-6" />
+                    <ArrowUpRight className="w-5 h-5" />
                   </a>
                 </div>
-                <h3 className="text-3xl font-black tracking-tighter text-on-surface mb-4">MuseBot</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
-                  Emotion-aware conversational AI chatbot using fine-tuned BERT-base-uncased on GoEmotions dataset. Integrated with WhatsApp API for personalized music recommendations.
+                <h3 className="font-label text-3xl font-bold tracking-tighter text-on-surface mb-4">
+                  MuseBot
+                </h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed">
+                  Emotion-aware conversational AI using fine-tuned BERT on
+                  GoEmotions. Integrates with WhatsApp API for personalized
+                  music recommendations based on detected mood.
                 </p>
               </div>
-              <div className="mt-auto">
-                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Core Technology</p>
+              <div className="mt-8">
+                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface/25 mb-3">
+                  Stack
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { name: "BERT", color: "bg-secondary" },
-                    { name: "PyTorch", color: "bg-primary" },
-                    { name: "WhatsApp API", color: "bg-tertiary" }
-                  ].map(tech => (
-                    <div key={tech.name} className="px-3 py-1.5 rounded-md border border-outline-variant/20 flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full ${tech.color}`}></span>
-                      <span className="font-label text-xs text-on-surface-variant">{tech.name}</span>
+                    { name: "BERT", dot: "bg-purple" },
+                    { name: "PyTorch", dot: "bg-primary" },
+                    { name: "WhatsApp API", dot: "bg-tertiary" },
+                  ].map((tech) => (
+                    <div
+                      key={tech.name}
+                      className="px-3 py-1.5 rounded-lg bg-surface-low flex items-center gap-2"
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${tech.dot}`} />
+                      <span className="font-label text-xs text-on-surface/55">
+                        {tech.name}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -503,34 +673,40 @@ const Projects = () => (
           </motion.div>
 
           {/* Kambaz */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             whileHover={{ y: -5 }}
-            className="md:col-span-6 group relative overflow-hidden bg-surface-low rounded-xl transition-all duration-500 hover:bg-surface-lowest hover:shadow-[0_24px_48px_-12px_rgba(26,28,30,0.06)] border border-on-surface/5"
+            className="md:col-span-6 group relative overflow-hidden bg-surface-lowest rounded-xl transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(132,79,0,0.10)] border border-on-surface/5"
           >
-            <div className="p-10 flex flex-col h-full min-h-[350px]">
+            <div className="h-[3px] bg-gradient-to-r from-tertiary to-tertiary/20" />
+            <div className="p-10 flex flex-col min-h-[300px]">
               <div className="flex-grow">
-                <div className="mb-8 flex justify-between items-start">
-                  <Code2 className="text-tertiary w-10 h-10" />
-                  <a 
-                    className="text-on-surface-variant hover:text-tertiary transition-colors" 
+                <div className="mb-6 flex justify-between items-start">
+                  <Code2 className="text-tertiary w-7 h-7" />
+                  <a
+                    className="text-on-surface/25 hover:text-tertiary transition-colors"
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ArrowUpRight className="w-6 h-6" />
+                    <ArrowUpRight className="w-5 h-5" />
                   </a>
                 </div>
-                <h3 className="text-3xl font-black tracking-tighter text-on-surface mb-4">Kambaz</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
-                  A scalable full-stack learning platform using MERN stack, replicating Canvas-style dashboards with optimized architecture for concurrent user access.
+                <h3 className="font-label text-3xl font-bold tracking-tighter text-on-surface mb-3">
+                  Kambaz
+                </h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed">
+                  Full-stack learning platform (MERN) replicating Canvas-style
+                  dashboards, optimized for concurrent user access.
                 </p>
               </div>
-              <div className="mt-auto">
-                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Core Technology</p>
+              <div className="mt-8">
                 <div className="flex flex-wrap gap-2">
-                  {["MongoDB", "Express.js", "React", "Node.js"].map(tech => (
-                    <span key={tech} className="px-3 py-1.5 rounded-md border border-outline-variant/20 font-label text-xs text-on-surface-variant">
+                  {["MongoDB", "Express.js", "React", "Node.js"].map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1.5 rounded-lg bg-surface-low font-label text-xs text-on-surface/55"
+                    >
                       {tech}
                     </span>
                   ))}
@@ -540,34 +716,44 @@ const Projects = () => (
           </motion.div>
 
           {/* Publication */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             whileHover={{ y: -5 }}
-            className="md:col-span-6 group relative overflow-hidden bg-surface-lowest rounded-xl transition-all duration-500 hover:shadow-[0_24px_48px_-12px_rgba(26,28,30,0.06)] border border-on-surface/5"
+            className="md:col-span-6 group relative overflow-hidden bg-surface-lowest rounded-xl transition-all duration-500 hover:shadow-[0_20px_40px_-12px_rgba(123,79,160,0.08)] border border-on-surface/5"
           >
-            <div className="p-10 flex flex-col h-full min-h-[350px]">
+            <div className="h-[3px] bg-gradient-to-r from-primary/40 via-purple/40 to-purple/10" />
+            <div className="p-10 flex flex-col min-h-[300px]">
               <div className="flex-grow">
-                <div className="mb-8 flex justify-between items-start">
-                  <BarChart3 className="text-primary w-10 h-10" />
-                  <a 
-                    className="text-on-surface-variant hover:text-primary transition-colors" 
+                <div className="mb-6 flex justify-between items-start">
+                  <BookOpen className="text-on-surface/35 w-7 h-7" />
+                  <a
+                    className="text-on-surface/25 hover:text-primary transition-colors"
                     href="#"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <ArrowUpRight className="w-6 h-6" />
+                    <ArrowUpRight className="w-5 h-5" />
                   </a>
                 </div>
-                <h3 className="text-3xl font-black tracking-tighter text-on-surface mb-4">Publication: Epidemic Dynamics</h3>
-                <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
-                  Co-authored research on predicting outbreaks using ML, published in the Asian Conference (ACIIDS). Benchmarked transformer models across heterogeneous datasets.
+                <span className="font-label text-[10px] uppercase tracking-widest text-on-surface/30 block mb-2">
+                  ACIIDS Publication
+                </span>
+                <h3 className="font-label text-3xl font-bold tracking-tighter text-on-surface mb-3">
+                  Epidemic Dynamics
+                </h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed">
+                  Co-authored ML research on predicting disease outbreaks.
+                  Benchmarked transformer models (BERT, RoBERTa, DistilBERT)
+                  across heterogeneous datasets.
                 </p>
               </div>
-              <div className="mt-auto">
-                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Research Stack</p>
+              <div className="mt-8">
                 <div className="flex flex-wrap gap-2">
-                  {["PyTorch", "BERT", "RoBERTa", "DistilBERT"].map(tech => (
-                    <span key={tech} className="px-3 py-1.5 rounded-md border border-outline-variant/20 font-label text-xs text-on-surface-variant">
+                  {["PyTorch", "BERT", "RoBERTa", "DistilBERT"].map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-3 py-1.5 rounded-lg bg-surface-low font-label text-xs text-on-surface/55"
+                    >
                       {tech}
                     </span>
                   ))}
@@ -581,114 +767,186 @@ const Projects = () => (
   </section>
 );
 
-const TechnicalCore = () => (
-  <section className="py-32 bg-background relative bg-bleeding-secondary" id="skills">
-    <div className="max-w-7xl mx-auto px-8">
-      <motion.div 
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-        variants={sectionVariants}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-20"
-      >
-        <motion.div variants={itemVariants} className="lg:col-span-1">
-          <h2 className="text-5xl font-black tracking-tighter mb-8 leading-[0.9]">Technical <br/>Core</h2>
-          <p className="text-on-surface-variant leading-relaxed mb-10">
-            A curated selection of tools and languages that form my primary engineering stack. Focused on scalability, performance, and data integrity.
-          </p>
-          <div className="flex gap-6">
-            <Terminal className="text-primary w-8 h-8" />
-            <Database className="text-secondary w-8 h-8" />
-            <Cloud className="text-tertiary w-8 h-8" />
-          </div>
+// ─── Technical Core ───────────────────────────────────────────────────────────
+
+const TechnicalCore = () => {
+  const skills = [
+    { label: "Language", title: "Python", desc: "Data Science · Backend", hover: "hover:border-primary hover:text-primary" },
+    { label: "Database", title: "SQL", desc: "PostgreSQL · BigQuery", hover: "hover:border-purple hover:text-purple" },
+    { label: "Language", title: "C / C++", desc: "Systems Engineering", hover: "hover:border-tertiary hover:text-tertiary" },
+    { label: "Backend", title: "Node.js", desc: "Express · RESTful APIs", hover: "hover:border-primary hover:text-primary" },
+    { label: "Frontend", title: "React", desc: "TypeScript · Tailwind", hover: "hover:border-purple hover:text-purple" },
+    { label: "DevOps", title: "CI / CD", desc: "Docker · GitHub Actions", hover: "hover:border-tertiary hover:text-tertiary" },
+    { label: "AI / ML", title: "PyTorch", desc: "NLP · Transformers", hover: "hover:border-primary hover:text-primary" },
+    { label: "Cloud", title: "AWS", desc: "Lambda · Bedrock · S3", hover: "hover:border-purple hover:text-purple" },
+    { label: "Database", title: "MongoDB", desc: "NoSQL · Atlas", hover: "hover:border-tertiary hover:text-tertiary" },
+  ];
+
+  return (
+    <section className="py-28 bg-background" id="skills">
+      <div className="max-w-7xl mx-auto px-8">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={sectionVariants}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-20"
+        >
+          <motion.div variants={itemVariants} className="lg:col-span-1">
+            <span className="font-label text-xs font-semibold tracking-widest text-purple uppercase block mb-3">
+              04
+            </span>
+            <h2 className="font-label text-5xl font-bold tracking-tighter mb-8 leading-[0.95]">
+              Technical
+              <br />
+              Core
+            </h2>
+            <p className="text-on-surface-variant leading-relaxed text-sm">
+              The tools I reach for first. Built around scalability, data
+              integrity, and getting things to actually ship.
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={itemVariants}
+            className="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-10"
+          >
+            {skills.map((skill) => (
+              <div
+                key={skill.title}
+                className={`group border-l-2 border-outline-variant/20 pl-5 py-1.5 transition-all duration-200 cursor-default ${skill.hover}`}
+              >
+                <span className="font-label text-[9px] uppercase tracking-widest text-on-surface/30 mb-1 block">
+                  {skill.label}
+                </span>
+                <h4 className="font-label font-bold text-lg text-on-surface group-hover:text-inherit transition-colors">
+                  {skill.title}
+                </h4>
+                <p className="font-label text-xs text-on-surface/35 mt-1">
+                  {skill.desc}
+                </p>
+              </div>
+            ))}
+          </motion.div>
         </motion.div>
-        <motion.div variants={itemVariants} className="lg:col-span-2 grid grid-cols-2 md:grid-cols-3 gap-y-12 gap-x-8">
-          {[
-            { label: "LANGUAGE", title: "Python", desc: "Data Science / Backend", color: "border-primary hover:text-primary" },
-            { label: "DATABASE", title: "SQL", desc: "PostgreSQL / BigQuery", color: "border-secondary hover:text-secondary" },
-            { label: "LANGUAGE", title: "C / C++", desc: "Systems Engineering", color: "border-tertiary hover:text-tertiary" },
-            { label: "BACKEND", title: "Node.js", desc: "Express / RESTful APIs", color: "border-primary hover:text-primary" },
-            { label: "FRONTEND", title: "React", desc: "TypeScript / Tailwind", color: "border-secondary hover:text-secondary" },
-            { label: "DEVOPS", title: "CI / CD", desc: "Docker / GitHub Actions", color: "border-tertiary hover:text-tertiary" },
-            { label: "AI / ML", title: "PyTorch", desc: "NLP / Transformers", color: "border-primary hover:text-primary" },
-            { label: "CLOUD", title: "AWS", desc: "Lambda / Bedrock / S3", color: "border-secondary hover:text-secondary" },
-            { label: "DATABASE", title: "MongoDB", desc: "NoSQL / Atlas", color: "border-tertiary hover:text-tertiary" }
-          ].map(skill => (
-            <div key={skill.title} className={`group border-l-2 border-outline-variant/20 pl-6 py-2 transition-all ${skill.color}`}>
-              <span className="font-mono text-[10px] opacity-40 mb-2 block">{skill.label}</span>
-              <h4 className={`font-bold text-xl transition-colors`}>{skill.title}</h4>
-              <p className="text-xs font-label uppercase tracking-widest opacity-60 mt-2">{skill.desc}</p>
-            </div>
-          ))}
-        </motion.div>
-      </motion.div>
-    </div>
-  </section>
-);
+      </div>
+    </section>
+  );
+};
+
+// ─── CTA ──────────────────────────────────────────────────────────────────────
 
 const CTA = () => (
-  <section className="py-32 bg-on-surface text-white" id="cta">
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
+  <section className="py-28 bg-[#18102b]" id="cta">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.8 }}
-      className="max-w-7xl mx-auto px-8 text-center relative overflow-hidden"
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className="max-w-7xl mx-auto px-8"
     >
-      <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-12 relative z-10">Let's build the <br/>future of data.</h2>
-      <div className="flex flex-col md:flex-row justify-center gap-6 relative z-10">
-        <a className="bg-primary text-white px-10 py-5 font-bold text-lg rounded-md hover:bg-primary-container transition-all text-center" href="mailto:tiwari.sha@northeastern.edu">Get in Touch</a>
-        <a className="border border-white/20 px-10 py-5 font-bold text-lg rounded-md hover:bg-white/10 transition-all text-center" href="https://www.linkedin.com/in/shashwat-tiwari118/">View Project Deck</a>
+      <div className="max-w-2xl">
+        <span className="font-label text-xs font-semibold tracking-widest text-purple/60 uppercase block mb-6">
+          Let's connect
+        </span>
+        <h2 className="font-label text-5xl md:text-6xl font-bold tracking-tighter text-white leading-[1.05] mb-8">
+          Got something
+          <br />
+          worth making?
+        </h2>
+        <p className="text-white/45 leading-relaxed mb-12 text-lg">
+          I'm actively looking for full-time roles from Summer 2026. If you're
+          building something interesting — I'd genuinely like to hear it.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <a
+            className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 font-label font-bold rounded-lg hover:bg-primary/90 transition-all duration-200"
+            href="mailto:tiwari.sha@northeastern.edu"
+          >
+            <Mail className="w-4 h-4" />
+            tiwari.sha@northeastern.edu
+          </a>
+          <a
+            className="inline-flex items-center justify-center gap-2 border border-white/15 text-white px-8 py-4 font-label font-bold rounded-lg hover:bg-white/8 transition-all duration-200"
+            href="https://www.linkedin.com/in/shashwat-tiwari118/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Linkedin className="w-4 h-4" />
+            LinkedIn
+          </a>
+        </div>
       </div>
     </motion.div>
   </section>
 );
 
+// ─── Footer ───────────────────────────────────────────────────────────────────
+
 const Footer = () => (
-  <footer className="w-full border-t border-on-surface/10 bg-surface">
-    <div className="flex flex-col md:flex-row justify-between items-center py-12 px-8 max-w-7xl mx-auto">
-      <div className="mb-8 md:mb-0">
-        <span className="text-lg font-bold text-on-surface">Shashwat Tiwari</span>
-        <p className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/40 mt-2">© 2024 Shashwat Tiwari </p>
+  <footer className="w-full border-t border-on-surface/8 bg-surface">
+    <div className="flex flex-col md:flex-row justify-between items-center py-10 px-8 max-w-7xl mx-auto gap-6">
+      <div>
+        <span className="font-label font-bold text-on-surface text-sm">
+          Shashwat Tiwari
+        </span>
+        <p className="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/30 mt-1">
+          © 2025 — Built with React & Tailwind
+        </p>
       </div>
-      <div className="flex gap-8 font-label text-xs uppercase tracking-widest">
-        <a 
-          className="text-on-surface/60 hover:text-primary transition-colors flex items-center gap-1" 
+      <div className="flex gap-6 font-label text-xs items-center">
+        <a
+          className="text-on-surface/45 hover:text-primary transition-colors flex items-center gap-1.5"
           href="https://www.linkedin.com/in/shashwat-tiwari118/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Linkedin className="w-4 h-4" /> LinkedIn
+          <Linkedin className="w-3.5 h-3.5" />
+          LinkedIn
         </a>
-        <a 
-          className="text-on-surface/60 hover:text-primary transition-colors flex items-center gap-1" 
+        <a
+          className="text-on-surface/45 hover:text-primary transition-colors flex items-center gap-1.5"
           href="mailto:tiwari.sha@northeastern.edu"
         >
-          <Mail className="w-4 h-4" /> Email
+          <Mail className="w-3.5 h-3.5" />
+          Email
         </a>
-        <a 
-          className="text-on-surface/60 hover:text-primary transition-colors flex items-center gap-1" 
+        <a
+          className="text-on-surface/45 hover:text-primary transition-colors flex items-center gap-1.5"
           href="https://github.com/shashhwatiwari"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Github className="w-4 h-4" /> GitHub
+          <Github className="w-3.5 h-3.5" />
+          GitHub
+        </a>
+        <a
+          className="text-on-surface/45 hover:text-primary transition-colors flex items-center gap-1.5"
+          href="https://leetcode.com/u/shashwat__/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <BarChart3 className="w-3.5 h-3.5" />
+          LeetCode
         </a>
       </div>
     </div>
   </footer>
 );
 
+// ─── App ──────────────────────────────────────────────────────────────────────
+
 export default function App() {
   return (
-    <div className="min-h-screen selection:bg-primary/10">
+    <div className="min-h-screen">
       <Navbar />
-      <main className="pt-20">
+      <main className="pt-16">
         <Hero />
         <Experience />
         <Education />
         <Projects />
         <TechnicalCore />
+        <CTA />
       </main>
       <Footer />
     </div>

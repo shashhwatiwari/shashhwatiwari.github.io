@@ -8,8 +8,11 @@
 
   --color-primary: #ff5e00;
   --color-primary-container: #ff7a33;
-  --color-secondary: #ff7a33;
-  --color-secondary-container: #ff9666;
+  --color-secondary: #7B4FA0;
+  --color-secondary-container: #9D6BC4;
+  --color-purple: #7B4FA0;
+  --color-purple-light: #9D6BC4;
+  --color-purple-muted: #f5f0f9;
   --color-tertiary: #844f00;
   --color-tertiary-container: #a26719;
   --color-background: #f9f9fb;
@@ -29,16 +32,20 @@
   body {
     @apply bg-background text-on-surface font-sans antialiased selection:bg-primary/20 selection:text-primary;
   }
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #e7bdb9;
+    border-radius: 999px;
+  }
 }
 
 @layer utilities {
-  .bg-bleeding-primary {
-    background: radial-gradient(600px circle at top right, rgba(255, 94, 0, 0.05), transparent);
-  }
-  .bg-bleeding-secondary {
-    background: radial-gradient(600px circle at bottom left, rgba(255, 122, 51, 0.05), transparent);
-  }
   .glass-nav {
-    @apply bg-white/70 backdrop-blur-xl;
+    @apply bg-white/80 backdrop-blur-xl;
   }
 }
