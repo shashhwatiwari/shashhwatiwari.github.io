@@ -1,28 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 
 @theme {
-  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-label: "Space Grotesk", sans-serif;
+  /* ─ Fonts ──────────────────────────────────────────────── */
+  --font-sans:    "Inter",   ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Nunito",  sans-serif;
+  --font-hand:    "Caveat",  cursive;
+  --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-primary: #ff5e00;
-  --color-primary-container: #ff7a33;
-  --color-secondary: #7B4FA0;
-  --color-secondary-container: #9D6BC4;
-  --color-purple: #7B4FA0;
-  --color-purple-light: #9D6BC4;
-  --color-purple-muted: #f5f0f9;
-  --color-tertiary: #844f00;
-  --color-tertiary-container: #a26719;
-  --color-background: #f9f9fb;
-  --color-surface: #f9f9fb;
-  --color-surface-low: #f3f3f6;
-  --color-surface-lowest: #ffffff;
-  --color-on-surface: #1a1c1e;
-  --color-on-surface-variant: #5d3f3d;
-  --color-outline: #926e6c;
-  --color-outline-variant: #e7bdb9;
+  /* ─ Brand colors ───────────────────────────────────────── */
+  --color-orange:       #FF6B35;
+  --color-orange-light: #FFB69E;
+  --color-orange-pale:  #FFF3EE;
+  --color-purple:       #7C5CBF;
+  --color-purple-light: #A78FDB;
+  --color-purple-pale:  #EDE9F8;
+  --color-dark:         #1A1A2E;
+  --color-cream:        #FAFAFA;
+  --color-paper:        #FFF8F2;
 }
 
 @layer base {
@@ -30,22 +25,81 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-background text-on-surface font-sans antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-cream text-dark font-sans antialiased;
   }
-  ::-webkit-scrollbar {
-    width: 6px;
+  ::selection {
+    background: rgba(255, 107, 53, 0.18);
+    color: #FF6B35;
   }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #e7bdb9;
-    border-radius: 999px;
-  }
+  ::-webkit-scrollbar             { width: 5px; }
+  ::-webkit-scrollbar-track       { background: transparent; }
+  ::-webkit-scrollbar-thumb       { background: #A78FDB; border-radius: 999px; }
 }
 
 @layer utilities {
+  /* Font helpers (Tailwind 4 auto-generates font-display / font-hand
+     from --font-display / --font-hand in @theme, but explicit helpers
+     keep arbitrary overrides working too) */
+  .font-display { font-family: "Nunito", sans-serif; }
+  .font-hand    { font-family: "Caveat", cursive; }
+
+  /* Polaroid frame */
+  .polaroid-frame {
+    background: #fff;
+    padding: 10px 10px 36px;
+    box-shadow:
+      2px 3px 0 rgba(0,0,0,0.04),
+      3px 6px 18px rgba(0,0,0,0.12),
+      0 0 0 1px rgba(0,0,0,0.04);
+    border-radius: 2px;
+  }
+
+  /* Tape strip */
+  .tape-strip {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(1.5deg);
+    width: 52px;
+    height: 20px;
+    background: rgba(255, 218, 80, 0.55);
+    border-radius: 2px;
+    z-index: 10;
+  }
+
+  /* Section label */
+  .section-label {
+    @apply font-hand text-base font-semibold mb-1;
+  }
+
+  /* Glass nav */
   .glass-nav {
-    @apply bg-white/80 backdrop-blur-xl;
+    background: rgba(250, 250, 250, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Dashed card border */
+  .card-dashed {
+    border: 2px dashed currentColor;
+    border-radius: 1rem;
+  }
+
+  /* Skill pill */
+  .skill-pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-sans font-medium;
+  }
+
+  /* Project card top accent */
+  .card-top-orange { box-shadow: inset 0 3px 0 #FF6B35; }
+  .card-top-purple { box-shadow: inset 0 3px 0 #7C5CBF; }
+
+  /* Hand-drawn underline */
+  .hand-underline {
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
 }
