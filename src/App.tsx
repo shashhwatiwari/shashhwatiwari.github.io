@@ -84,8 +84,8 @@ const Polaroid = ({ src, alt, rotate = 0, className = "" }: PolaroidProps) => (
           loading="lazy"
           /*
            * Photo path note: files must be in /public/photos/ (plural).
-           * Full path on disk: <project-root>/public/photos/stadium.jpg etc.
-           * Dev URL: http://localhost:3000/portfolio/photos/stadium.jpg
+           * Full path on disk: <project-root>/public/photos/stadium.jpeg etc.
+           * Dev URL: http://localhost:3000/portfolio/photos/stadium.jpeg
            */
         />
       </div>
@@ -95,14 +95,14 @@ const Polaroid = ({ src, alt, rotate = 0, className = "" }: PolaroidProps) => (
 
 // ─── Photo Cluster ────────────────────────────────────────────────────────────
 // Four plain overlapping images (no polaroid frame). "more of me." text overlay.
-// Photo files needed: /public/photos/1.jpg, 2.jpg, 3.jpg, 4.jpg
+// Photo files needed: /public/photos/1.jpeg, 2.jpeg, 3.jpeg, 4.jpeg
 
 const PhotoCluster = () => {
   const photos = [
-    { file: "1.jpg", alt: "shashwat photo 1", rotate: -6, bottom: 0 },
-    { file: "2.jpg", alt: "shashwat photo 2", rotate: 4,  bottom: 20 },
-    { file: "3.jpg", alt: "shashwat photo 3", rotate: -3, bottom: 0 },
-    { file: "4.jpg", alt: "shashwat photo 4", rotate: 6,  bottom: 16 },
+    { file: "1.jpeg", alt: "shashwat photo 1", rotate: -6, bottom: 0 },
+    { file: "2.jpeg", alt: "shashwat photo 2", rotate: 4,  bottom: 20 },
+    { file: "3.jpeg", alt: "shashwat photo 3", rotate: -3, bottom: 0 },
+    { file: "4.jpeg", alt: "shashwat photo 4", rotate: 6,  bottom: 16 },
   ];
 
   return (
@@ -457,7 +457,7 @@ const Hero = () => {
               <div className="polaroid-frame">
                 <div className="overflow-hidden bg-gray-100 aspect-[3/4] w-full">
                   <img
-                    src={`${BASE}photos/boston.jpg`}
+                    src={`${BASE}photos/boston.jpeg`}
                     alt="Boston"
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -468,7 +468,7 @@ const Hero = () => {
 
             {/* Main polaroid — enlarged from w-44 md:w-52 → w-60 md:w-72 */}
             <Polaroid
-              src={`${BASE}photos/stadium.jpg`}
+              src={`${BASE}photos/stadium.jpeg`}
               alt="Shashwat at soccer game"
               rotate={-4}
               className="w-60 md:w-72 relative z-10"
