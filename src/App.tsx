@@ -2,68 +2,60 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Shashwat Tiwari — Scrapbook Portfolio
- * Inspired by Yuki Fang's collage aesthetic
+ * Shashwat Tiwari — Portfolio
+ * Fonts: Nunito (display) + Inter (body). No third font.
  */
 
 import { motion, useScroll, useTransform } from "motion/react";
 import { useState, useEffect, type CSSProperties } from "react";
-import { Github, Linkedin, Mail, ExternalLink, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL;
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Subtle Geometric Accents (hero only) ─────────────────────────────────────
+// Thin outlines and tiny dots at 8–12% opacity — design-portfolio aesthetic.
 
-interface GitHubRepo {
-  id: number;
-  name: string;
-  description: string | null;
-  language: string | null;
-  stargazers_count: number;
-  html_url: string;
-}
+type GeomProps = { className?: string; style?: CSSProperties };
 
-// ─── SVG Sticker Shapes ───────────────────────────────────────────────────────
-
-type StickerProps = { className?: string; style?: CSSProperties };
-
-const StarShape = ({ className = "", style = {} }: StickerProps) => (
-  <svg className={className} style={style} viewBox="0 0 32 32" fill="currentColor">
-    <path d="M16 2l2.9 8.9H28l-7.5 5.4 2.9 8.9L16 19.7l-7.4 5.5 2.9-8.9L4 10.9h9.1z" />
+/** Thin circle outline */
+const GeomCircle = ({ className = "", style = {} }: GeomProps) => (
+  <svg className={className} style={style} viewBox="0 0 40 40" fill="none">
+    <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="1.25" />
   </svg>
 );
 
-const SparkleShape = ({ className = "", style = {} }: StickerProps) => (
-  <svg className={className} style={style} viewBox="0 0 32 32" fill="currentColor">
-    <path d="M16 2c0 7.7-6.3 14-14 14 7.7 0 14 6.3 14 14 0-7.7 6.3-14 14-14-7.7 0-14-6.3-14-14z" />
+/** Thin ＋ cross */
+const GeomCross = ({ className = "", style = {} }: GeomProps) => (
+  <svg className={className} style={style} viewBox="0 0 18 18" fill="currentColor">
+    <rect x="8" y="0" width="2" height="18" />
+    <rect x="0" y="8" width="18" height="2" />
   </svg>
 );
 
-const FlowerShape = ({ className = "", style = {} }: StickerProps) => (
-  <svg className={className} style={style} viewBox="0 0 40 40" fill="currentColor">
-    <ellipse cx="20" cy="9"  rx="5" ry="8" />
-    <ellipse cx="20" cy="9"  rx="5" ry="8" transform="rotate(60 20 20)" />
-    <ellipse cx="20" cy="9"  rx="5" ry="8" transform="rotate(120 20 20)" />
-    <ellipse cx="20" cy="9"  rx="5" ry="8" transform="rotate(180 20 20)" />
-    <ellipse cx="20" cy="9"  rx="5" ry="8" transform="rotate(240 20 20)" />
-    <ellipse cx="20" cy="9"  rx="5" ry="8" transform="rotate(300 20 20)" />
-    <circle cx="20" cy="20" r="7" fill="white" />
-    <circle cx="20" cy="20" r="5" />
+/** Filled micro-dot */
+const GeomDot = ({ className = "", style = {} }: GeomProps) => (
+  <svg className={className} style={style} viewBox="0 0 8 8" fill="currentColor">
+    <circle cx="4" cy="4" r="2.5" />
   </svg>
 );
 
-const PlusShape = ({ className = "", style = {} }: StickerProps) => (
-  <svg className={className} style={style} viewBox="0 0 32 32" fill="currentColor">
-    <rect x="13" y="2" width="6" height="28" rx="3" />
-    <rect x="2" y="13" width="28" height="6" rx="3" />
+// ─── Social Icon SVGs ─────────────────────────────────────────────────────────
+
+const GitHubIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
   </svg>
 );
 
-const AsteriskShape = ({ className = "", style = {} }: StickerProps) => (
-  <svg className={className} style={style} viewBox="0 0 32 32" fill="currentColor">
-    <rect x="14" y="2" width="4" height="28" rx="2" />
-    <rect x="14" y="2" width="4" height="28" rx="2" transform="rotate(60 16 16)" />
-    <rect x="14" y="2" width="4" height="28" rx="2" transform="rotate(120 16 16)" />
+const LinkedInIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+  </svg>
+);
+
+const LeetCodeIcon = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z" />
   </svg>
 );
 
@@ -72,16 +64,15 @@ const AsteriskShape = ({ className = "", style = {} }: StickerProps) => (
 interface PolaroidProps {
   src: string;
   alt: string;
-  caption?: string;
   rotate?: number;
   className?: string;
 }
 
-const Polaroid = ({ src, alt, caption, rotate = 0, className = "" }: PolaroidProps) => (
+const Polaroid = ({ src, alt, rotate = 0, className = "" }: PolaroidProps) => (
   <motion.div
     className={`relative inline-block flex-shrink-0 ${className}`}
     style={{ transform: `rotate(${rotate}deg)` }}
-    whileHover={{ scale: 1.04, rotate: rotate * 0.6, transition: { duration: 0.25, ease: "easeOut" } }}
+    whileHover={{ scale: 1.04, rotate: rotate * 0.6, transition: { duration: 0.22, ease: "easeOut" } }}
   >
     <div className="tape-strip" />
     <div className="polaroid-frame">
@@ -91,14 +82,74 @@ const Polaroid = ({ src, alt, caption, rotate = 0, className = "" }: PolaroidPro
           alt={alt}
           className="w-full h-full object-cover"
           loading="lazy"
+          /*
+           * Photo path note: files must be in /public/photos/ (plural).
+           * Full path on disk: <project-root>/public/photos/stadium.jpg etc.
+           * Dev URL: http://localhost:3000/portfolio/photos/stadium.jpg
+           */
         />
       </div>
-      {caption && (
-        <p className="font-hand text-sm text-center mt-2 text-dark/50 leading-snug">{caption}</p>
-      )}
     </div>
   </motion.div>
 );
+
+// ─── Photo Cluster ────────────────────────────────────────────────────────────
+// Four plain overlapping images (no polaroid frame). "more of me." text overlay.
+// Photo files needed: /public/photos/1.jpg, 2.jpg, 3.jpg, 4.jpg
+
+const PhotoCluster = () => {
+  const photos = [
+    { file: "1.jpg", alt: "shashwat photo 1", rotate: -6, bottom: 0 },
+    { file: "2.jpg", alt: "shashwat photo 2", rotate: 4,  bottom: 20 },
+    { file: "3.jpg", alt: "shashwat photo 3", rotate: -3, bottom: 0 },
+    { file: "4.jpg", alt: "shashwat photo 4", rotate: 6,  bottom: 16 },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.7, delay: 0.1 }}
+      className="relative h-[280px] mb-10"
+    >
+      {photos.map((p, i) => (
+        <motion.div
+          key={p.file}
+          className="absolute"
+          style={{
+            left: `${i * 22}%`,
+            bottom: p.bottom,
+            zIndex: i + 1,
+            transform: `rotate(${p.rotate}deg)`,
+          }}
+          whileHover={{ scale: 1.06, zIndex: 10, transition: { duration: 0.2 } }}
+        >
+          <img
+            src={`${BASE}photos/${p.file}`}
+            alt={p.alt}
+            className="w-36 h-48 object-cover shadow-lg"
+            style={{ borderRadius: 6 }}
+            loading="lazy"
+          />
+        </motion.div>
+      ))}
+
+      {/* "more of me." overlay centered on cluster */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        style={{ zIndex: 20 }}
+      >
+        <span
+          className="font-display font-black text-white text-base lowercase px-5 py-2 rounded-full"
+          style={{ background: "rgba(26,26,46,0.45)", backdropFilter: "blur(4px)" }}
+        >
+          more of me.
+        </span>
+      </div>
+    </motion.div>
+  );
+};
 
 // ─── Typewriter ───────────────────────────────────────────────────────────────
 
@@ -147,7 +198,11 @@ const SectionHeading = ({
   accent?: "orange" | "purple";
 }) => (
   <div className="mb-14">
-    <p className={`font-hand text-lg font-semibold mb-1 ${accent === "orange" ? "text-orange" : "text-purple"}`}>
+    <p
+      className={`font-sans text-xs font-semibold tracking-widest uppercase mb-2 ${
+        accent === "orange" ? "text-orange" : "text-purple"
+      }`}
+    >
       {label}
     </p>
     <h2 className="font-display font-black text-4xl md:text-5xl lowercase text-dark leading-tight">
@@ -169,7 +224,7 @@ const Navbar = () => {
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 24);
-      const ids = ["about", "experience", "projects", "skills", "contact"];
+      const ids = ["about", "experience", "projects", "skills", "resume", "contact"];
       const current = ids.find((id) => {
         const el = document.getElementById(id);
         if (!el) return false;
@@ -187,8 +242,13 @@ const Navbar = () => {
     { href: "#experience", label: "experience" },
     { href: "#projects",   label: "projects" },
     { href: "#skills",     label: "skills" },
-    { href: "https://www.linkedin.com/in/shashwat-tiwari118/", label: "resume", ext: true },
     { href: "#contact",    label: "contact me" },
+  ];
+
+  const socialIcons = [
+    { href: "https://github.com/shashhwatiwari",               icon: <GitHubIcon size={24} />,   label: "github" },
+    { href: "https://www.linkedin.com/in/shashwat-tiwari118/", icon: <LinkedInIcon size={24} />, label: "linkedin" },
+    { href: "https://leetcode.com/u/shashwat__/",              icon: <LeetCodeIcon size={24} />, label: "leetcode" },
   ];
 
   return (
@@ -198,19 +258,15 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
         <a href="#" className="font-display font-black text-xl lowercase text-dark hover:text-orange transition-colors">
           shashwat.
         </a>
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-7">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              target={l.ext ? "_blank" : undefined}
-              rel={l.ext ? "noopener noreferrer" : undefined}
               className={`font-sans text-sm font-medium lowercase transition-colors duration-200 ${
                 active === l.href.slice(1)
                   ? "text-orange"
@@ -218,24 +274,48 @@ const Navbar = () => {
               }`}
             >
               {l.label}
-              {l.ext && <ExternalLink className="inline w-3 h-3 ml-0.5 -mt-0.5" />}
             </a>
           ))}
+
+          {/* Separator */}
+          <span className="h-4 w-px bg-dark/15" />
+
+          {/* Social icons — 24px, before Resume button */}
+          {socialIcons.map((s) => (
+            <a
+              key={s.label}
+              href={s.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={s.label}
+              className="text-dark/40 hover:text-orange transition-colors"
+            >
+              {s.icon}
+            </a>
+          ))}
+
+          {/* Resume button — links to #resume section */}
+          <a
+            href="#resume"
+            className={`font-sans text-sm font-semibold lowercase px-4 py-1.5 rounded-full bg-orange text-white hover:bg-orange/85 transition-colors ${
+              active === "resume" ? "ring-2 ring-orange/40" : ""
+            }`}
+          >
+            resume
+          </a>
         </div>
 
-        {/* Mobile toggle */}
         <button
           className="md:hidden w-8 h-8 flex flex-col gap-1.5 justify-center items-end"
           onClick={() => setMobileOpen((p) => !p)}
           aria-label="Toggle menu"
         >
-          <span className={`block h-0.5 bg-dark rounded-full transition-all ${mobileOpen ? "w-6" : "w-6"}`} />
-          <span className={`block h-0.5 bg-dark rounded-full transition-all ${mobileOpen ? "w-4" : "w-4"}`} />
-          <span className={`block h-0.5 bg-dark rounded-full transition-all ${mobileOpen ? "w-6" : "w-5"}`} />
+          <span className="block h-0.5 w-6 bg-dark rounded-full" />
+          <span className="block h-0.5 w-4 bg-dark rounded-full" />
+          <span className="block h-0.5 w-5 bg-dark rounded-full" />
         </button>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -246,14 +326,33 @@ const Navbar = () => {
             <a
               key={l.href}
               href={l.href}
-              target={l.ext ? "_blank" : undefined}
-              rel={l.ext ? "noopener noreferrer" : undefined}
               onClick={() => setMobileOpen(false)}
               className="font-sans text-sm font-medium lowercase text-dark/70 hover:text-orange transition-colors"
             >
               {l.label}
             </a>
           ))}
+          <a
+            href="#resume"
+            onClick={() => setMobileOpen(false)}
+            className="font-sans text-sm font-medium lowercase text-orange"
+          >
+            resume
+          </a>
+          <div className="flex items-center gap-5 pt-2">
+            {socialIcons.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={s.label}
+                className="text-dark/40 hover:text-orange transition-colors"
+              >
+                {s.icon}
+              </a>
+            ))}
+          </div>
         </motion.div>
       )}
     </nav>
@@ -264,28 +363,34 @@ const Navbar = () => {
 
 const Hero = () => {
   const { scrollY } = useScroll();
-  const s1y = useTransform(scrollY, [0, 500], [0, -55]);
-  const s2y = useTransform(scrollY, [0, 500], [0, -35]);
-  const s3y = useTransform(scrollY, [0, 500], [0, -70]);
-  const s4y = useTransform(scrollY, [0, 500], [0, -20]);
+  const a1y = useTransform(scrollY, [0, 500], [0, -30]);
+  const a2y = useTransform(scrollY, [0, 500], [0, -18]);
+  const a3y = useTransform(scrollY, [0, 500], [0, -42]);
 
   return (
     <section className="relative min-h-screen flex items-center overflow-visible pt-20 pb-16 px-6">
-      {/* ── Background sticker decorations ── */}
-      <motion.div style={{ y: s1y }} className="absolute top-[11%] left-[4%] pointer-events-none select-none opacity-80">
-        <StarShape className="w-9 h-9 text-orange" style={{ transform: "rotate(22deg)" }} />
+      {/*
+       * ── Subtle geometric accents (hero only) ──────────────────────────────
+       * Thin outlines + micro-dots at 8–12% opacity. Not on any other section.
+       */}
+      <motion.div style={{ y: a1y }} className="absolute top-[12%] left-[5%] pointer-events-none select-none">
+        <GeomCircle className="w-14 h-14 text-orange opacity-[0.09]" />
       </motion.div>
-      <motion.div style={{ y: s2y }} className="absolute top-[18%] right-[7%] pointer-events-none select-none opacity-70">
-        <SparkleShape className="w-7 h-7 text-purple" style={{ transform: "rotate(-18deg)" }} />
+      <motion.div style={{ y: a2y }} className="absolute top-[20%] right-[7%] pointer-events-none select-none">
+        <GeomCross className="w-5 h-5 text-purple opacity-[0.10]" />
       </motion.div>
-      <motion.div style={{ y: s3y }} className="absolute bottom-[28%] left-[2%] pointer-events-none select-none opacity-60">
-        <FlowerShape className="w-12 h-12 text-purple-light" style={{ transform: "rotate(12deg)" }} />
+      <motion.div style={{ y: a3y }} className="absolute bottom-[32%] left-[2.5%] pointer-events-none select-none">
+        <GeomCircle className="w-9 h-9 text-purple opacity-[0.08]" />
       </motion.div>
-      <motion.div style={{ y: s4y }} className="absolute bottom-[20%] right-[5%] pointer-events-none select-none opacity-75">
-        <AsteriskShape className="w-8 h-8 text-orange" style={{ transform: "rotate(30deg)" }} />
-      </motion.div>
-      <SparkleShape className="absolute top-[40%] left-[12%] w-5 h-5 text-orange opacity-50 pointer-events-none" style={{ transform: "rotate(-8deg)" }} />
-      <PlusShape className="absolute top-[65%] right-[12%] w-6 h-6 text-purple opacity-40 pointer-events-none" style={{ transform: "rotate(15deg)" }} />
+      <div className="absolute top-[42%] right-[3.5%] pointer-events-none select-none">
+        <GeomDot className="w-3.5 h-3.5 text-orange opacity-[0.13]" />
+      </div>
+      <div className="absolute bottom-[18%] right-[14%] pointer-events-none select-none">
+        <GeomCross className="w-4 h-4 text-purple opacity-[0.09]" />
+      </div>
+      <div className="absolute top-[7%] right-[22%] pointer-events-none select-none">
+        <GeomDot className="w-2.5 h-2.5 text-orange opacity-[0.11]" />
+      </div>
 
       <div className="max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-20 items-center">
@@ -299,7 +404,7 @@ const Hero = () => {
             {/* Status badge */}
             <div className="inline-flex items-center gap-2 bg-orange-pale border border-orange/20 rounded-full px-4 py-1.5 mb-9">
               <span className="w-1.5 h-1.5 rounded-full bg-orange animate-pulse" />
-              <span className="font-hand text-orange font-semibold text-sm">
+              <span className="font-sans font-medium text-orange text-sm">
                 open to full-time · summer 2026
               </span>
             </div>
@@ -337,38 +442,36 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          {/* ── Right: polaroid + stickers ── */}
+          {/* ── Right: polaroids — ~35% larger ── */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex justify-center md:justify-end relative"
           >
-            {/* Mini stickers near polaroid */}
-            <StarShape className="absolute -top-7 right-10 w-7 h-7 text-orange z-20 pointer-events-none" style={{ transform: "rotate(28deg)" }} />
-            <SparkleShape className="absolute -bottom-5 left-4 w-5 h-5 text-purple z-20 pointer-events-none" style={{ transform: "rotate(-12deg)" }} />
-            <PlusShape className="absolute top-8 -left-4 w-5 h-5 text-orange z-20 pointer-events-none" style={{ transform: "rotate(10deg)" }} />
-
-            {/* Second polaroid peeking behind — abstract city */}
+            {/* Boston polaroid peeking behind — enlarged from w-36 → w-48 */}
             <div
-              className="absolute right-2 top-4 w-36 opacity-70"
+              className="absolute right-2 top-4 w-48 opacity-70"
               style={{ transform: "rotate(6deg)" }}
             >
               <div className="polaroid-frame">
                 <div className="overflow-hidden bg-gray-100 aspect-[3/4] w-full">
-                  <img src={`${BASE}photos/boston.jpg`} alt="Boston" className="w-full h-full object-cover" loading="lazy" />
+                  <img
+                    src={`${BASE}photos/boston.jpg`}
+                    alt="Boston"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
                 </div>
-                <p className="font-hand text-xs text-center mt-1.5 text-dark/40">boston 🌆</p>
               </div>
             </div>
 
-            {/* Main polaroid */}
+            {/* Main polaroid — enlarged from w-44 md:w-52 → w-60 md:w-72 */}
             <Polaroid
               src={`${BASE}photos/stadium.jpg`}
               alt="Shashwat at soccer game"
-              caption="barça 🔵🔴"
               rotate={-4}
-              className="w-44 md:w-52 relative z-10"
+              className="w-60 md:w-72 relative z-10"
             />
           </motion.div>
         </div>
@@ -380,17 +483,13 @@ const Hero = () => {
 // ─── About Me ─────────────────────────────────────────────────────────────────
 
 const AboutMe = () => (
-  <section id="about" className="py-24 px-6 bg-paper relative overflow-visible">
-    {/* Background stickers */}
-    <StarShape className="absolute top-8 right-8 w-7 h-7 text-purple opacity-30 pointer-events-none" style={{ transform: "rotate(-15deg)" }} />
-    <FlowerShape className="absolute bottom-12 left-6 w-10 h-10 text-orange opacity-20 pointer-events-none" style={{ transform: "rotate(8deg)" }} />
-
+  <section id="about" className="py-24 px-6 bg-paper">
     <div className="max-w-6xl mx-auto">
-      <SectionHeading label="✦ who am i" title="about me" accent="orange" />
+      <SectionHeading label="who am i" title="about me" accent="orange" />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-16 items-start">
 
-        {/* ── Left: bio + photo collage ── */}
+        {/* ── Left: bio + photo cluster ── */}
         <div>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -404,36 +503,8 @@ const AboutMe = () => (
             currently pursuing ms cs at northeastern, based in boston.
           </motion.p>
 
-          {/* Photo collage */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="relative flex items-end gap-0 h-[260px]"
-          >
-            <Polaroid
-              src={`${BASE}photos/nyc.jpg`}
-              alt="NYC at night"
-              caption="nyc nights 🌉"
-              rotate={-5}
-              className="w-40 absolute left-0 bottom-0 z-10"
-            />
-            <Polaroid
-              src={`${BASE}photos/concert.jpg`}
-              alt="Concert"
-              caption="live music 🎵"
-              rotate={3}
-              className="w-40 absolute left-28 bottom-4 z-20"
-            />
-            <Polaroid
-              src={`${BASE}photos/burger.jpg`}
-              alt="Burger"
-              caption="food runs 🍔"
-              rotate={-2}
-              className="w-36 absolute left-56 bottom-0 z-30"
-            />
-          </motion.div>
+          {/* Photo cluster — 4 plain images, no polaroid frames */}
+          <PhotoCluster />
 
           {/* Beyond my resume */}
           <motion.div
@@ -441,20 +512,22 @@ const AboutMe = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-14"
+            className="mt-4"
           >
-            <p className="font-hand text-xl font-bold text-dark mb-4">beyond my resume, i also...</p>
+            <p className="font-sans text-sm font-semibold text-dark/70 lowercase mb-4">
+              beyond my resume, i also...
+            </p>
             <div className="flex flex-wrap gap-2.5">
               {[
                 { emoji: "⚽", label: "soccer (barça fan)", bg: "bg-orange-pale text-orange border-orange/20" },
-                { emoji: "🎵", label: "live music", bg: "bg-purple-pale text-purple border-purple/20" },
+                { emoji: "🎵", label: "live music",         bg: "bg-purple-pale text-purple border-purple/20" },
                 { emoji: "📸", label: "street photography", bg: "bg-orange-pale text-orange border-orange/20" },
-                { emoji: "🍔", label: "food hunting", bg: "bg-purple-pale text-purple border-purple/20" },
-                { emoji: "🌆", label: "city exploring", bg: "bg-orange-pale text-orange border-orange/20" },
+                { emoji: "🍔", label: "food hunting",       bg: "bg-purple-pale text-purple border-purple/20" },
+                { emoji: "🌆", label: "city exploring",     bg: "bg-orange-pale text-orange border-orange/20" },
               ].map((h) => (
                 <span
                   key={h.label}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 border text-sm font-medium font-sans ${h.bg}`}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 border text-sm font-sans font-medium ${h.bg}`}
                 >
                   <span className="text-base leading-none">{h.emoji}</span>
                   {h.label}
@@ -466,7 +539,9 @@ const AboutMe = () => (
 
         {/* ── Right: education cards ── */}
         <div>
-          <p className="font-hand text-xl font-bold text-dark mb-6">education 🎓</p>
+          <p className="font-sans text-sm font-semibold text-dark/70 lowercase mb-6">
+            education 🎓
+          </p>
           <div className="flex flex-col gap-5">
             {[
               {
@@ -506,7 +581,7 @@ const AboutMe = () => (
                   <p className="font-display font-bold text-sm lowercase text-dark leading-tight">
                     {edu.name}
                   </p>
-                  <p className="font-hand text-base font-semibold mt-0.5" style={{ color: edu.color }}>
+                  <p className="font-sans text-sm font-semibold mt-0.5" style={{ color: edu.color }}>
                     {edu.degree}
                   </p>
                   <p className="font-sans text-xs text-dark/45 mt-1">
@@ -517,6 +592,211 @@ const AboutMe = () => (
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+);
+
+// ─── Snapshot (Bento) ─────────────────────────────────────────────────────────
+// "in a snapshot" — 3-col bento grid: Education (2col), Experience (1col),
+// Tools & Platforms (2col), Find me on (1col), orange stat tile (full-width).
+
+const Snapshot = () => (
+  <section id="snapshot" className="py-20 px-6">
+    <div className="max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="mb-12"
+      >
+        <p className="font-sans text-xs font-semibold tracking-widest uppercase text-purple mb-2">
+          quick facts
+        </p>
+        <h2 className="font-display font-black text-3xl md:text-4xl lowercase text-dark leading-tight">
+          in a snapshot.
+        </h2>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        {/* ── Education — col-span-2 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.05 }}
+          className="md:col-span-2 bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
+        >
+          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
+            education
+          </p>
+          <div className="flex flex-col gap-5">
+            {[
+              {
+                logo: `${BASE}NEU.png`,
+                name: "northeastern university",
+                degree: "ms computer science",
+                gpa: "4.0",
+                period: "2024–2026",
+                color: "#d41c2c",
+              },
+              {
+                logo: `${BASE}sn-logo.png`,
+                name: "shiv nadar university",
+                degree: "bs computer science",
+                gpa: "3.5",
+                period: "2020–2024",
+                color: "#1270b7",
+              },
+            ].map((edu) => (
+              <div key={edu.name} className="flex items-center gap-4">
+                <img
+                  src={edu.logo}
+                  alt={edu.name}
+                  className="w-10 h-10 object-contain shrink-0"
+                  referrerPolicy="no-referrer"
+                />
+                <div>
+                  <p className="font-display font-bold text-sm lowercase text-dark leading-tight">
+                    {edu.name}
+                  </p>
+                  <p className="font-sans text-xs font-medium mt-0.5" style={{ color: edu.color }}>
+                    {edu.degree} · gpa {edu.gpa} · {edu.period}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── Experience summary — col-span-1 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
+        >
+          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
+            experience
+          </p>
+          <div className="flex flex-col gap-3.5">
+            {[
+              { name: "aftershoot inc.", color: "#006397", emoji: "💻" },
+              { name: "bain & company",  color: "#cc0000", emoji: "📊" },
+              { name: "northeastern ta", color: "#d41c2c", emoji: "🎓" },
+            ].map((e) => (
+              <div key={e.name} className="flex items-center gap-2.5">
+                <span className="text-base leading-none">{e.emoji}</span>
+                <p className="font-sans text-sm font-medium lowercase" style={{ color: e.color }}>
+                  {e.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── Tools & Platforms — col-span-2 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="md:col-span-2 bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
+        >
+          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
+            tools & platforms
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              "AWS", "Docker", "GitHub Actions", "PostgreSQL", "MongoDB",
+              "Vercel", "Redis", "Supabase", "Jupyter", "Figma", "Linux",
+            ].map((tool) => (
+              <span
+                key={tool}
+                className="font-sans text-sm font-medium px-3 py-1.5 rounded-lg bg-cream text-dark/60 border border-dark/6"
+              >
+                {tool}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── Find me on — col-span-1 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
+        >
+          <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
+            find me on
+          </p>
+          <div className="flex flex-col gap-4">
+            {[
+              {
+                icon: <GitHubIcon size={20} />,
+                label: "github",
+                href: "https://github.com/shashhwatiwari",
+                color: "text-dark",
+              },
+              {
+                icon: <LinkedInIcon size={20} />,
+                label: "linkedin",
+                href: "https://www.linkedin.com/in/shashwat-tiwari118/",
+                color: "text-[#0077b5]",
+              },
+              {
+                icon: <LeetCodeIcon size={20} />,
+                label: "leetcode",
+                href: "https://leetcode.com/u/shashwat__/",
+                color: "text-[#FFA116]",
+              },
+            ].map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-3 font-sans text-sm font-medium lowercase hover:opacity-65 transition-opacity ${s.color}`}
+              >
+                {s.icon}
+                {s.label}
+              </a>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* ── Orange full-width stat tile — col-span-3 ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="md:col-span-3 rounded-2xl px-8 py-7 flex flex-wrap items-center gap-8 md:gap-14"
+          style={{ background: "#FF6B35" }}
+        >
+          {[
+            { value: "4.0",  label: "gpa" },
+            { value: "2",    label: "internships" },
+            { value: "1",    label: "co-authored paper" },
+            { value: "5+",   label: "projects shipped" },
+            { value: "300+", label: "students ta'd" },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col">
+              <span className="font-display font-black text-white text-3xl leading-none">
+                {stat.value}
+              </span>
+              <span className="font-sans text-white/70 text-xs font-medium lowercase mt-1">
+                {stat.label}
+              </span>
+            </div>
+          ))}
+        </motion.div>
+
       </div>
     </div>
   </section>
@@ -564,7 +844,7 @@ const experienceData = [
 ];
 
 const Experience = () => (
-  <section id="experience" className="py-24 px-6 relative overflow-visible">
+  <section id="experience" className="py-24 px-6">
     <div className="max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -572,13 +852,12 @@ const Experience = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <SectionHeading label="✦ where i've worked" title="experience" accent="purple" />
+        <SectionHeading label="where i've worked" title="experience" accent="purple" />
       </motion.div>
 
       {/* ── Desktop: horizontal timeline ── */}
       <div className="hidden md:block relative">
-        {/* The line */}
-        <div className="absolute top-[72px] left-0 right-0 h-[2px] bg-gradient-to-r from-orange via-purple to-orange opacity-40" />
+        <div className="absolute top-[72px] left-0 right-0 h-[2px] bg-gradient-to-r from-orange via-purple to-orange opacity-30" />
 
         <div className="grid grid-cols-3 gap-8">
           {experienceData.map((exp, i) => (
@@ -591,7 +870,7 @@ const Experience = () => (
               className="relative"
             >
               {/* Year label */}
-              <p className="font-hand text-lg font-bold text-center mb-3" style={{ color: exp.companyColor }}>
+              <p className="font-sans text-sm font-bold text-center mb-3 lowercase" style={{ color: exp.companyColor }}>
                 {exp.year}
               </p>
 
@@ -601,25 +880,24 @@ const Experience = () => (
                 style={{ background: exp.companyColor }}
               />
 
-              {/* Card — starts below the line */}
+              {/* Card */}
               <div
-                className={`mt-16 bg-white rounded-2xl p-6 shadow-sm transition-shadow duration-300 hover:shadow-md ${
+                className={`mt-16 bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 ${
                   exp.type === "academic"
                     ? "border-2 border-dashed border-purple/40"
                     : "border-2 border-orange/25"
                 }`}
               >
-                {/* Logo + company */}
                 <div className="flex items-center gap-3 mb-4">
                   <img src={exp.logo} alt={exp.company} className="h-8 object-contain" referrerPolicy="no-referrer" />
                 </div>
                 <h3 className="font-display font-black text-base lowercase text-dark mb-0.5">
                   {exp.role}
                 </h3>
-                <p className="font-hand text-sm font-semibold mb-1" style={{ color: exp.companyColor }}>
+                <p className="font-sans text-sm font-semibold mb-1" style={{ color: exp.companyColor }}>
                   {exp.company}
                 </p>
-                <p className="font-sans text-xs text-dark/40 mb-4 font-mono">{exp.period}</p>
+                <p className="font-mono text-xs text-dark/40 mb-4">{exp.period}</p>
                 <p className="font-sans text-sm text-dark/65 leading-relaxed mb-4">{exp.description}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {exp.tags.map((t) => (
@@ -636,8 +914,7 @@ const Experience = () => (
 
       {/* ── Mobile: vertical timeline ── */}
       <div className="md:hidden relative pl-10">
-        {/* Vertical line */}
-        <div className="absolute top-0 left-3.5 bottom-0 w-[2px] bg-gradient-to-b from-orange to-purple opacity-40" />
+        <div className="absolute top-0 left-3.5 bottom-0 w-[2px] bg-gradient-to-b from-orange to-purple opacity-30" />
 
         <div className="flex flex-col gap-8">
           {experienceData.map((exp, i) => (
@@ -649,13 +926,11 @@ const Experience = () => (
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="relative"
             >
-              {/* Dot on vertical line */}
               <div
                 className="absolute -left-[30px] top-5 w-4 h-4 rounded-full border-[3px] border-cream z-10"
                 style={{ background: exp.companyColor }}
               />
-
-              <p className="font-hand text-base font-bold mb-1" style={{ color: exp.companyColor }}>
+              <p className="font-sans text-sm font-bold mb-1 lowercase" style={{ color: exp.companyColor }}>
                 {exp.year}
               </p>
               <div
@@ -665,13 +940,9 @@ const Experience = () => (
                     : "border-2 border-orange/25"
                 }`}
               >
-                <h3 className="font-display font-black text-sm lowercase text-dark mb-0.5">
-                  {exp.role}
-                </h3>
-                <p className="font-hand text-sm font-semibold mb-1" style={{ color: exp.companyColor }}>
-                  {exp.company}
-                </p>
-                <p className="font-sans text-xs text-dark/40 font-mono mb-3">{exp.period}</p>
+                <h3 className="font-display font-black text-sm lowercase text-dark mb-0.5">{exp.role}</h3>
+                <p className="font-sans text-sm font-semibold mb-1" style={{ color: exp.companyColor }}>{exp.company}</p>
+                <p className="font-mono text-xs text-dark/40 mb-3">{exp.period}</p>
                 <p className="font-sans text-sm text-dark/65 leading-relaxed mb-3">{exp.description}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {exp.tags.map((t) => (
@@ -690,52 +961,66 @@ const Experience = () => (
 );
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
+/*
+ * Project images: add files to /public/photos/projects/
+ *   kambaz.png · regtranslate.png · emotion.png · staffsync.png · concentrainer.png
+ */
 
 const projectsData = [
   {
-    name: "regtranslate",
-    category: "🤖 ai / rag",
-    accent: "orange" as const,
-    href: "https://regtranslate.vercel.app/",
-    description:
-      "rag-based compliance platform that converts hipaa/gdpr pdfs into actionable jira-style developer tasks using llama 3 + langchain. semantic search pipeline via chromadb for high-accuracy retrieval.",
-    tags: ["Llama 3", "LangChain", "ChromaDB", "FastAPI"],
-  },
-  {
-    name: "musebot",
-    category: "💬 nlp",
-    accent: "purple" as const,
-    href: "#",
-    description:
-      "emotion-aware conversational ai using fine-tuned bert on goemotions dataset. integrates with whatsapp api to send personalized music recommendations based on detected mood.",
-    tags: ["BERT", "PyTorch", "WhatsApp API"],
-  },
-  {
     name: "kambaz",
-    category: "🌐 full-stack",
+    category: "full-stack",
     accent: "orange" as const,
     href: "#",
+    image: `${BASE}photos/projects/kambaz.png`,
     description:
-      "scalable full-stack learning platform built with the mern stack. replicates canvas-style dashboards — modules, quizzes, grades — optimized for concurrent user access at scale.",
+      "scalable learning management platform built with the mern stack — modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
   },
   {
-    name: "epidemic dynamics",
-    category: "📖 research",
+    name: "regtranslate",
+    category: "ai / rag",
+    accent: "purple" as const,
+    href: "https://regtranslate.vercel.app/",
+    image: `${BASE}photos/projects/regtranslate.png`,
+    description:
+      "rag-based compliance platform that converts hipaa/gdpr pdfs into actionable developer tasks using llama 3 + langchain. semantic search pipeline via chromadb.",
+    tags: ["Llama 3", "LangChain", "ChromaDB", "FastAPI"],
+  },
+  {
+    name: "emotion classifier",
+    category: "nlp",
+    accent: "orange" as const,
+    href: "#",
+    image: `${BASE}photos/projects/emotion.png`,
+    description:
+      "fine-tuned bert on the goemotions dataset for multi-label emotion detection. delivers real-time music recommendations via whatsapp based on inferred user mood.",
+    tags: ["BERT", "PyTorch", "WhatsApp API", "FastAPI"],
+  },
+  {
+    name: "staffsync",
+    category: "full-stack",
     accent: "purple" as const,
     href: "#",
+    image: `${BASE}photos/projects/staffsync.png`,
     description:
-      "co-authored ml research on predicting infectious disease outbreaks published at aciids. benchmarked bert, roberta, and distilbert across heterogeneous epidemiological datasets.",
-    tags: ["PyTorch", "BERT", "RoBERTa", "DistilBERT"],
+      "workforce scheduling platform with shift management, real-time notifications, and role-based access control. built with react + node.js + postgresql.",
+    tags: ["React", "Node.js", "PostgreSQL", "AWS"],
+  },
+  {
+    name: "concentrainer",
+    category: "ai / cv",
+    accent: "orange" as const,
+    href: "#",
+    image: `${BASE}photos/projects/concentrainer.png`,
+    description:
+      "focus enhancement app using pomodoro-style intervals with real-time engagement scoring — mediapipe-powered posture and attention analysis via webcam.",
+    tags: ["MediaPipe", "Python", "React", "WebRTC"],
   },
 ];
 
 const Projects = () => (
-  <section id="projects" className="py-24 px-6 bg-paper relative">
-    {/* Stickers */}
-    <StarShape className="absolute top-10 left-8 w-7 h-7 text-orange opacity-25 pointer-events-none" style={{ transform: "rotate(-20deg)" }} />
-    <AsteriskShape className="absolute bottom-16 right-8 w-8 h-8 text-purple opacity-20 pointer-events-none" style={{ transform: "rotate(35deg)" }} />
-
+  <section id="projects" className="py-24 px-6 bg-paper">
     <div className="max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -745,7 +1030,9 @@ const Projects = () => (
         className="flex items-end justify-between mb-14"
       >
         <div>
-          <p className="font-hand text-lg font-semibold text-orange mb-1">✦ what i've built</p>
+          <p className="font-sans text-xs font-semibold tracking-widest uppercase text-orange mb-2">
+            what i've built
+          </p>
           <h2 className="font-display font-black text-4xl md:text-5xl lowercase text-dark">projects</h2>
           <div className="mt-3 h-1.5 w-14 rounded-full bg-orange" />
         </div>
@@ -756,76 +1043,95 @@ const Projects = () => (
           className="hidden md:inline-flex items-center gap-2 font-sans text-sm font-medium text-dark/55 hover:text-orange transition-colors group"
         >
           <Github className="w-4 h-4" />
-          check out more on github!
+          more on github
           <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </a>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {/*
+       * 6-col grid: first 3 cards each span 2 cols (3 per row).
+       * 4th card: col-start-2 → cols 2–3 centered.
+       * 5th card: auto-places at cols 4–5 → both centered in the last row.
+       */}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-5">
         {projectsData.map((proj, i) => (
           <motion.div
             key={proj.name}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
+            transition={{ duration: 0.5, delay: (i % 3) * 0.1 }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className={`relative bg-white rounded-2xl p-7 shadow-sm hover:shadow-md transition-shadow ${
-              proj.accent === "orange" ? "card-top-orange" : "card-top-purple"
+            className={`relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow ${
+              i < 3
+                ? "md:col-span-2"
+                : i === 3
+                ? "md:col-start-2 md:col-span-2"
+                : "md:col-span-2"
             }`}
           >
-            {/* Category sticker */}
-            <div
-              className={`absolute top-4 right-4 font-hand text-sm font-semibold px-3 py-1 rounded-full ${
-                proj.accent === "orange"
-                  ? "bg-orange-pale text-orange"
-                  : "bg-purple-pale text-purple"
-              }`}
-            >
-              {proj.category}
-            </div>
-
-            {/* Content */}
-            <div className="pr-24">
-              <h3 className="font-display font-black text-xl lowercase text-dark mb-3 leading-tight">
-                {proj.name}
-              </h3>
-            </div>
-            <p className="font-sans text-sm text-dark/65 leading-relaxed mb-5">{proj.description}</p>
-            <div className="flex flex-wrap gap-2 mb-5">
-              {proj.tags.map((t) => (
-                <span
-                  key={t}
-                  className={`font-sans text-xs font-medium px-3 py-1 rounded-full ${
-                    proj.accent === "orange"
-                      ? "bg-orange-pale text-orange"
-                      : "bg-purple-pale text-purple"
-                  }`}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-            {proj.href !== "#" && (
-              <a
-                href={proj.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 font-sans text-sm font-medium transition-colors ${
+            {/* Project image — 180px, object-cover */}
+            <div className="relative h-[180px] overflow-hidden bg-gray-100">
+              <img
+                src={proj.image}
+                alt={proj.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+              {/* Category pill overlay */}
+              <div
+                className={`absolute top-3 left-3 font-sans text-xs font-semibold px-3 py-1 rounded-full ${
                   proj.accent === "orange"
-                    ? "text-orange hover:text-orange/75"
-                    : "text-purple hover:text-purple/75"
+                    ? "bg-orange text-white"
+                    : "bg-purple text-white"
                 }`}
               >
-                access full project here
-                <ArrowUpRight className="w-3.5 h-3.5" />
-              </a>
-            )}
+                {proj.category}
+              </div>
+            </div>
+
+            {/* Card content */}
+            <div className="p-6">
+              <h3 className="font-display font-black text-lg lowercase text-dark mb-2 leading-tight">
+                {proj.name}
+              </h3>
+              <p className="font-sans text-sm text-dark/65 leading-relaxed mb-4">
+                {proj.description}
+              </p>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {proj.tags.map((t) => (
+                  <span
+                    key={t}
+                    className={`font-sans text-xs font-medium px-2.5 py-1 rounded-full ${
+                      proj.accent === "orange"
+                        ? "bg-orange-pale text-orange"
+                        : "bg-purple-pale text-purple"
+                    }`}
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+              {proj.href !== "#" && (
+                <a
+                  href={proj.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-1.5 font-sans text-sm font-medium transition-colors ${
+                    proj.accent === "orange"
+                      ? "text-orange hover:text-orange/75"
+                      : "text-purple hover:text-purple/75"
+                  }`}
+                >
+                  view project
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Mobile GitHub link */}
       <div className="mt-8 text-center md:hidden">
         <a
           href="https://github.com/shashhwatiwari"
@@ -834,7 +1140,7 @@ const Projects = () => (
           className="inline-flex items-center gap-2 font-sans text-sm font-medium text-dark/55 hover:text-orange transition-colors"
         >
           <Github className="w-4 h-4" />
-          check out more on github! →
+          more on github →
         </a>
       </div>
     </div>
@@ -842,173 +1148,10 @@ const Projects = () => (
 );
 
 // ─── GitHub Activity ───────────────────────────────────────────────────────────
+// Heatmap only — repo cards removed. CSS filter for purple-tinted heatmap.
 
-const GitHubActivity = () => {
-  const [repos, setRepos] = useState<GitHubRepo[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    /*
-     * GitHub REST API — public endpoints, no auth required.
-     * Option A (implemented): ghchart.rshah.org for contribution heatmap (no token).
-     * Option B (upgrade path): GitHub GraphQL API with a personal access token stored in
-     *   VITE_GITHUB_TOKEN env variable for richer contribution data:
-     *   POST https://api.github.com/graphql
-     *   Authorization: bearer ${import.meta.env.VITE_GITHUB_TOKEN}
-     */
-    fetch("https://api.github.com/users/shashhwatiwari/repos?sort=updated&per_page=6")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((data: GitHubRepo[]) => { setRepos(data); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
-
-  const langColors: Record<string, string> = {
-    Python: "#3776AB", TypeScript: "#3178C6", JavaScript: "#F7DF1E",
-    Rust: "#CE422B", Java: "#B07219", "C++": "#F34B7D", HTML: "#E34C26",
-    CSS: "#563D7C",
-  };
-
-  return (
-    <section className="py-24 px-6 relative">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <SectionHeading label="✦ latest commits" title="what i've been building" accent="orange" />
-        </motion.div>
-
-        {/* Contribution heatmap */}
-        {/*
-         * Using Option A: ghchart.rshah.org with custom orange color (FF6B35).
-         * This pulls the public contribution graph from GitHub.
-         * Replace FF6B35 with 7C5CBF for the purple variant.
-         */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-dark/5 mb-8 overflow-hidden"
-        >
-          <p className="font-hand text-base font-semibold text-dark/50 mb-4">contributions · last year</p>
-          <img
-            src="https://ghchart.rshah.org/FF6B35/shashhwatiwari"
-            alt="GitHub contribution chart for shashhwatiwari"
-            className="w-full"
-            loading="lazy"
-          />
-        </motion.div>
-
-        {/* Recent repos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {loading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl p-5 border border-dark/5 animate-pulse h-28" />
-              ))
-            : repos.slice(0, 6).map((repo, i) => (
-                <motion.a
-                  key={repo.id}
-                  href={repo.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.07 }}
-                  whileHover={{ y: -3, transition: { duration: 0.18 } }}
-                  className="group bg-white rounded-2xl p-5 border border-dark/5 shadow-sm hover:shadow-md hover:border-orange/20 transition-all"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <p className="font-display font-bold text-sm text-dark group-hover:text-orange transition-colors leading-tight">
-                      {repo.name}
-                    </p>
-                    <ArrowUpRight className="w-4 h-4 text-dark/30 group-hover:text-orange transition-colors shrink-0 ml-2" />
-                  </div>
-                  {repo.description && (
-                    <p className="font-sans text-xs text-dark/50 leading-relaxed mb-3 line-clamp-2">
-                      {repo.description}
-                    </p>
-                  )}
-                  <div className="flex items-center gap-3">
-                    {repo.language && (
-                      <span className="inline-flex items-center gap-1.5 font-sans text-xs text-dark/45">
-                        <span
-                          className="w-2.5 h-2.5 rounded-full"
-                          style={{ background: langColors[repo.language] ?? "#888" }}
-                        />
-                        {repo.language}
-                      </span>
-                    )}
-                    {repo.stargazers_count > 0 && (
-                      <span className="font-sans text-xs text-dark/40">
-                        ★ {repo.stargazers_count}
-                      </span>
-                    )}
-                  </div>
-                </motion.a>
-              ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ─── Skills ───────────────────────────────────────────────────────────────────
-
-const skillCategories = [
-  {
-    name: "languages",
-    emoji: "🧠",
-    accent: "orange" as const,
-    skills: ["Python", "SQL", "TypeScript", "C / C++", "Rust"],
-  },
-  {
-    name: "backend",
-    emoji: "⚙️",
-    accent: "purple" as const,
-    skills: ["Node.js", "Express", "FastAPI", "REST APIs"],
-  },
-  {
-    name: "frontend",
-    emoji: "🎨",
-    accent: "orange" as const,
-    skills: ["React", "Tailwind CSS", "HTML / CSS"],
-  },
-  {
-    name: "ai / ml",
-    emoji: "🤖",
-    accent: "purple" as const,
-    skills: ["PyTorch", "LangChain", "BERT", "scikit-learn", "OpenCV"],
-  },
-  {
-    name: "cloud",
-    emoji: "☁️",
-    accent: "orange" as const,
-    skills: ["AWS Lambda", "Bedrock", "S3"],
-  },
-  {
-    name: "devops",
-    emoji: "🚀",
-    accent: "purple" as const,
-    skills: ["Docker", "GitHub Actions", "CI / CD"],
-  },
-  {
-    name: "databases",
-    emoji: "🗄️",
-    accent: "orange" as const,
-    skills: ["PostgreSQL", "MongoDB", "ChromaDB", "BigQuery"],
-  },
-];
-
-const Skills = () => (
-  <section id="skills" className="py-24 px-6 bg-paper relative">
-    {/* Stickers */}
-    <SparkleShape className="absolute top-12 right-10 w-6 h-6 text-orange opacity-30 pointer-events-none" style={{ transform: "rotate(22deg)" }} />
-    <FlowerShape className="absolute bottom-16 left-8 w-9 h-9 text-purple opacity-20 pointer-events-none" style={{ transform: "rotate(-15deg)" }} />
-
+const GitHubActivity = () => (
+  <section className="py-24 px-6">
     <div className="max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -1016,7 +1159,50 @@ const Skills = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <SectionHeading label="✦ my toolbox" title="technical core" accent="purple" />
+        <SectionHeading label="commit activity" title="on github" accent="orange" />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-dark/5 overflow-hidden"
+      >
+        <img
+          src="https://ghchart.rshah.org/shashhwatiwari"
+          alt="GitHub contribution chart"
+          className="w-full"
+          style={{ filter: "hue-rotate(200deg) saturate(1.3)" }}
+          loading="lazy"
+        />
+      </motion.div>
+    </div>
+  </section>
+);
+
+// ─── Skills ───────────────────────────────────────────────────────────────────
+
+const skillCategories = [
+  { name: "languages", emoji: "🧠", accent: "orange" as const, skills: ["Python", "SQL", "TypeScript", "C / C++", "Rust"] },
+  { name: "backend",   emoji: "⚙️",  accent: "purple" as const, skills: ["Node.js", "Express", "FastAPI", "REST APIs"] },
+  { name: "frontend",  emoji: "🎨", accent: "orange" as const, skills: ["React", "Tailwind CSS", "HTML / CSS"] },
+  { name: "ai / ml",   emoji: "🤖", accent: "purple" as const, skills: ["PyTorch", "LangChain", "BERT", "scikit-learn", "OpenCV"] },
+  { name: "cloud",     emoji: "☁️",  accent: "orange" as const, skills: ["AWS Lambda", "Bedrock", "S3"] },
+  { name: "devops",    emoji: "🚀", accent: "purple" as const, skills: ["Docker", "GitHub Actions", "CI / CD"] },
+  { name: "databases", emoji: "🗄️", accent: "orange" as const, skills: ["PostgreSQL", "MongoDB", "ChromaDB", "BigQuery"] },
+];
+
+const Skills = () => (
+  <section id="skills" className="py-24 px-6 bg-paper">
+    <div className="max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <SectionHeading label="my toolbox" title="technical core" accent="purple" />
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -1029,7 +1215,7 @@ const Skills = () => (
             transition={{ duration: 0.5, delay: i * 0.07 }}
             className="bg-white rounded-2xl p-5 shadow-sm border border-dark/5"
           >
-            <p className={`font-hand text-lg font-bold mb-3 ${cat.accent === "orange" ? "text-orange" : "text-purple"}`}>
+            <p className={`font-sans text-sm font-semibold mb-3 ${cat.accent === "orange" ? "text-orange" : "text-purple"}`}>
               {cat.emoji} {cat.name}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -1053,15 +1239,71 @@ const Skills = () => (
   </section>
 );
 
+// ─── Resume ───────────────────────────────────────────────────────────────────
+/*
+ * TODO: Add the following files to /public/
+ *   resume-preview.png  — screenshot / exported thumbnail of your resume PDF
+ *   resume.pdf          — the actual resume document
+ */
+
+const Resume = () => (
+  <section id="resume" className="py-24 px-6">
+    <div className="max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
+        <SectionHeading label="my resume" title="resume" accent="purple" />
+      </motion.div>
+
+      <div className="flex flex-col md:flex-row items-start gap-10">
+        {/* Document thumbnail */}
+        <motion.div
+          initial={{ opacity: 0, x: -16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="shrink-0 w-44 rounded-xl overflow-hidden shadow-lg border border-dark/8"
+        >
+          <img
+            src={`${BASE}resume-preview.png`}
+            alt="Resume preview"
+            className="w-full"
+            loading="lazy"
+          />
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, x: 16 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="flex flex-col justify-center gap-5"
+        >
+          <p className="font-sans text-lg text-dark/65 leading-relaxed max-w-[48ch]">
+            one page. everything you need to know — experience, education, projects, and skills.
+          </p>
+          <a
+            href={`${BASE}resume.pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-purple text-white font-display font-bold lowercase px-7 py-3.5 rounded-xl hover:bg-purple/85 transition-colors w-fit text-base"
+          >
+            open full resume ↗
+          </a>
+        </motion.div>
+      </div>
+    </div>
+  </section>
+);
+
 // ─── Contact ──────────────────────────────────────────────────────────────────
 
 const Contact = () => (
-  <section id="contact" className="py-28 px-6 bg-dark relative overflow-hidden">
-    {/* Decorative stickers on dark bg */}
-    <StarShape className="absolute top-12 left-8 w-10 h-10 text-orange opacity-10 pointer-events-none" style={{ transform: "rotate(18deg)" }} />
-    <FlowerShape className="absolute bottom-12 right-10 w-14 h-14 text-purple-light opacity-10 pointer-events-none" style={{ transform: "rotate(-8deg)" }} />
-    <SparkleShape className="absolute top-1/2 right-[15%] w-8 h-8 text-orange opacity-15 pointer-events-none" style={{ transform: "rotate(30deg)" }} />
-
+  <section id="contact" className="py-28 px-6 bg-dark">
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -1070,7 +1312,9 @@ const Contact = () => (
       className="max-w-6xl mx-auto"
     >
       <div className="max-w-2xl">
-        <p className="font-hand text-xl font-semibold text-purple-light mb-4">✦ let's connect</p>
+        <p className="font-sans text-xs font-semibold tracking-widest uppercase text-purple-light mb-4">
+          let's connect
+        </p>
         <h2
           className="font-display font-black text-white lowercase leading-[0.95] mb-7"
           style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
@@ -1117,22 +1361,41 @@ const Footer = () => (
           © 2025 — built with react & tailwind
         </p>
       </div>
-      <div className="flex items-center gap-6">
+
+      {/* Social icons — 32px with text labels */}
+      <div className="flex items-center gap-8">
         {[
-          { href: "https://www.linkedin.com/in/shashwat-tiwari118/", icon: <Linkedin className="w-4 h-4" />, label: "linkedin" },
-          { href: "mailto:tiwari.sha@northeastern.edu",              icon: <Mail className="w-4 h-4" />,     label: "email" },
-          { href: "https://github.com/shashhwatiwari",               icon: <Github className="w-4 h-4" />,   label: "github" },
-          { href: "https://leetcode.com/u/shashwat__/",              icon: <ExternalLink className="w-4 h-4" />, label: "leetcode" },
+          {
+            href: "https://github.com/shashhwatiwari",
+            icon: <GitHubIcon size={32} />,
+            label: "github",
+          },
+          {
+            href: "https://www.linkedin.com/in/shashwat-tiwari118/",
+            icon: <LinkedInIcon size={32} />,
+            label: "linkedin",
+          },
+          {
+            href: "https://leetcode.com/u/shashwat__/",
+            icon: <LeetCodeIcon size={32} />,
+            label: "leetcode",
+          },
+          {
+            href: "mailto:tiwari.sha@northeastern.edu",
+            icon: <Mail className="w-8 h-8" />,
+            label: "email",
+            noBlank: true,
+          },
         ].map((l) => (
           <a
             key={l.label}
             href={l.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 font-sans text-xs text-dark/45 hover:text-orange transition-colors"
+            target={l.noBlank ? undefined : "_blank"}
+            rel={l.noBlank ? undefined : "noopener noreferrer"}
+            className="flex flex-col items-center gap-1.5 text-dark/35 hover:text-orange transition-colors"
           >
             {l.icon}
-            {l.label}
+            <span className="font-sans text-xs lowercase">{l.label}</span>
           </a>
         ))}
       </div>
@@ -1149,10 +1412,12 @@ export default function App() {
       <main>
         <Hero />
         <AboutMe />
+        <Snapshot />
         <Experience />
         <Projects />
         <GitHubActivity />
         <Skills />
+        <Resume />
         <Contact />
       </main>
       <Footer />

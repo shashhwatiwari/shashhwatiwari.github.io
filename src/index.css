@@ -1,14 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* ── Fonts ────────────────────────────────────────────────────────────────── */
+/* Only two font families: Nunito (display) + Inter (body). No third font.   */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /* ─ Fonts ──────────────────────────────────────────────── */
+  /* ─ Font stacks ─────────────────────────────────────────────────────────── */
   --font-sans:    "Inter",   ui-sans-serif, system-ui, sans-serif;
   --font-display: "Nunito",  sans-serif;
-  --font-hand:    "Caveat",  cursive;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* ─ Brand colors ───────────────────────────────────────── */
+  /* ─ Brand colors ─────────────────────────────────────────────────────────── */
   --color-orange:       #FF6B35;
   --color-orange-light: #FFB69E;
   --color-orange-pale:  #FFF3EE;
@@ -37,16 +38,13 @@
 }
 
 @layer utilities {
-  /* Font helpers (Tailwind 4 auto-generates font-display / font-hand
-     from --font-display / --font-hand in @theme, but explicit helpers
-     keep arbitrary overrides working too) */
+  /* Display font helper */
   .font-display { font-family: "Nunito", sans-serif; }
-  .font-hand    { font-family: "Caveat", cursive; }
 
   /* Polaroid frame */
   .polaroid-frame {
     background: #fff;
-    padding: 10px 10px 36px;
+    padding: 10px 10px 32px;
     box-shadow:
       2px 3px 0 rgba(0,0,0,0.04),
       3px 6px 18px rgba(0,0,0,0.12),
@@ -67,11 +65,6 @@
     z-index: 10;
   }
 
-  /* Section label */
-  .section-label {
-    @apply font-hand text-base font-semibold mb-1;
-  }
-
   /* Glass nav */
   .glass-nav {
     background: rgba(250, 250, 250, 0.92);
@@ -79,27 +72,7 @@
     -webkit-backdrop-filter: blur(20px);
   }
 
-  /* Dashed card border */
-  .card-dashed {
-    border: 2px dashed currentColor;
-    border-radius: 1rem;
-  }
-
-  /* Skill pill */
-  .skill-pill {
-    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-sans font-medium;
-  }
-
   /* Project card top accent */
   .card-top-orange { box-shadow: inset 0 3px 0 #FF6B35; }
   .card-top-purple { box-shadow: inset 0 3px 0 #7C5CBF; }
-
-  /* Hand-drawn underline */
-  .hand-underline {
-    text-decoration: underline;
-    text-decoration-style: wavy;
-    text-decoration-color: currentColor;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
-  }
 }
