@@ -2,8 +2,8 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Shashwat Tiwari - Portfolio
- * Fonts: Nunito (display) + Inter (body). No third font.
+ * Shashwat Tiwari — Portfolio
+ * Fonts: Poppins (display) + Inter (body).
  */
 
 import { motion, useScroll, useTransform } from "motion/react";
@@ -13,18 +13,15 @@ import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 const BASE = import.meta.env.BASE_URL;
 
 // ─── Subtle Geometric Accents (hero only) ─────────────────────────────────────
-// Thin outlines and tiny dots at 8–12% opacity - design-portfolio aesthetic.
 
 type GeomProps = { className?: string; style?: CSSProperties };
 
-/** Thin circle outline */
 const GeomCircle = ({ className = "", style = {} }: GeomProps) => (
   <svg className={className} style={style} viewBox="0 0 40 40" fill="none">
     <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="1.25" />
   </svg>
 );
 
-/** Thin ＋ cross */
 const GeomCross = ({ className = "", style = {} }: GeomProps) => (
   <svg className={className} style={style} viewBox="0 0 18 18" fill="currentColor">
     <rect x="8" y="0" width="2" height="18" />
@@ -32,7 +29,6 @@ const GeomCross = ({ className = "", style = {} }: GeomProps) => (
   </svg>
 );
 
-/** Filled micro-dot */
 const GeomDot = ({ className = "", style = {} }: GeomProps) => (
   <svg className={className} style={style} viewBox="0 0 8 8" fill="currentColor">
     <circle cx="4" cy="4" r="2.5" />
@@ -71,8 +67,8 @@ interface PolaroidProps {
 const Polaroid = ({ src, alt, rotate = 0, className = "" }: PolaroidProps) => (
   <motion.div
     className={`relative inline-block flex-shrink-0 ${className}`}
-    style={{ transform: `rotate(${rotate}deg)` }}
-    whileHover={{ scale: 1.04, rotate: rotate * 0.6, transition: { duration: 0.22, ease: "easeOut" } }}
+    initial={{ rotate }}
+    whileHover={{ scale: 1.04, rotate, transition: { duration: 0.22, ease: "easeOut" } }}
   >
     <div className="tape-strip" />
     <div className="polaroid-frame">
@@ -82,11 +78,6 @@ const Polaroid = ({ src, alt, rotate = 0, className = "" }: PolaroidProps) => (
           alt={alt}
           className="w-full h-full object-cover"
           loading="lazy"
-          /*
-           * Photo path note: files must be in /public/photos/ (plural).
-           * Full path on disk: <project-root>/public/photos/stadium.jpeg etc.
-           * Dev URL: http://localhost:3000/portfolio/photos/stadium.jpeg
-           */
         />
       </div>
     </div>
@@ -94,15 +85,15 @@ const Polaroid = ({ src, alt, rotate = 0, className = "" }: PolaroidProps) => (
 );
 
 // ─── Photo Cluster ────────────────────────────────────────────────────────────
-// Four plain overlapping images (no polaroid frame). "more of me." text overlay.
+// Four plain overlapping images (no polaroid frame). "More of me." text overlay.
 // Photo files needed: /public/photos/1.jpeg, 2.jpeg, 3.jpeg, 4.jpeg
 
 const PhotoCluster = () => {
   const photos = [
-    { file: "1.jpeg", alt: "shashwat photo 1", rotate: -6, bottom: 0 },
-    { file: "2.jpeg", alt: "shashwat photo 2", rotate: 4,  bottom: 20 },
-    { file: "3.jpeg", alt: "shashwat photo 3", rotate: -3, bottom: 0 },
-    { file: "4.jpeg", alt: "shashwat photo 4", rotate: 6,  bottom: 16 },
+    { file: "1.jpeg", alt: "Shashwat photo 1", rotate: -6, bottom: 0 },
+    { file: "2.jpeg", alt: "Shashwat photo 2", rotate: 4,  bottom: 20 },
+    { file: "3.jpeg", alt: "Shashwat photo 3", rotate: -3, bottom: 0 },
+    { file: "4.jpeg", alt: "Shashwat photo 4", rotate: 6,  bottom: 16 },
   ];
 
   return (
@@ -121,9 +112,9 @@ const PhotoCluster = () => {
             left: `${i * 22}%`,
             bottom: p.bottom,
             zIndex: i + 1,
-            transform: `rotate(${p.rotate}deg)`,
           }}
-          whileHover={{ scale: 1.06, zIndex: 10, transition: { duration: 0.2 } }}
+          initial={{ rotate: p.rotate }}
+          whileHover={{ scale: 1.06, rotate: p.rotate, zIndex: 10, transition: { duration: 0.2 } }}
         >
           <img
             src={`${BASE}photos/${p.file}`}
@@ -135,6 +126,18 @@ const PhotoCluster = () => {
         </motion.div>
       ))}
 
+      {/* "More of me." overlay centered on cluster */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        style={{ zIndex: 20 }}
+      >
+        <span
+          className="font-display font-bold text-white text-base px-5 py-2 rounded-full"
+          style={{ background: "rgba(26,26,46,0.45)", backdropFilter: "blur(4px)" }}
+        >
+          More of me.
+        </span>
+      </div>
     </motion.div>
   );
 };
@@ -193,7 +196,7 @@ const SectionHeading = ({
     >
       {label}
     </p>
-    <h2 className="font-display font-black text-4xl md:text-5xl lowercase text-dark leading-tight">
+    <h2 className="font-display font-black text-4xl md:text-5xl text-dark leading-tight">
       {title}
     </h2>
     <div
@@ -226,17 +229,17 @@ const Navbar = () => {
   }, []);
 
   const links = [
-    { href: "#about",      label: "about me" },
-    { href: "#experience", label: "experience" },
-    { href: "#projects",   label: "projects" },
-    { href: "#skills",     label: "skills" },
-    { href: "#contact",    label: "contact me" },
+    { href: "#about",      label: "About Me" },
+    { href: "#experience", label: "Experience" },
+    { href: "#projects",   label: "Projects" },
+    { href: "#skills",     label: "Skills" },
+    { href: "#contact",    label: "Contact" },
   ];
 
   const socialIcons = [
-    { href: "https://github.com/shashhwatiwari",               icon: <GitHubIcon size={24} />,   label: "github" },
-    { href: "https://www.linkedin.com/in/shashwat-tiwari118/", icon: <LinkedInIcon size={24} />, label: "linkedin" },
-    { href: "https://leetcode.com/u/shashwat__/",              icon: <LeetCodeIcon size={24} />, label: "leetcode" },
+    { href: "https://github.com/shashhwatiwari",               icon: <GitHubIcon size={24} />,   label: "GitHub" },
+    { href: "https://www.linkedin.com/in/shashwat-tiwari118/", icon: <LinkedInIcon size={24} />, label: "LinkedIn" },
+    { href: "https://leetcode.com/u/shashwat__/",              icon: <LeetCodeIcon size={24} />, label: "LeetCode" },
   ];
 
   return (
@@ -246,8 +249,8 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="font-display font-black text-xl lowercase text-dark hover:text-orange transition-colors">
-          shashwat.
+        <a href="#" className="font-display font-black text-xl text-dark hover:text-orange transition-colors">
+          Shashwat.
         </a>
 
         <div className="hidden md:flex items-center gap-7">
@@ -255,7 +258,7 @@ const Navbar = () => {
             <a
               key={l.href}
               href={l.href}
-              className={`font-sans text-sm font-medium lowercase transition-colors duration-200 ${
+              className={`font-sans text-sm font-medium transition-colors duration-200 ${
                 active === l.href.slice(1)
                   ? "text-orange"
                   : "text-dark/55 hover:text-dark"
@@ -268,7 +271,7 @@ const Navbar = () => {
           {/* Separator */}
           <span className="h-4 w-px bg-dark/15" />
 
-          {/* Social icons - 24px, before Resume button */}
+          {/* Social icons — 24px, before Resume button */}
           {socialIcons.map((s) => (
             <a
               key={s.label}
@@ -282,14 +285,14 @@ const Navbar = () => {
             </a>
           ))}
 
-          {/* Resume button - links to #resume section */}
+          {/* Resume button */}
           <a
             href="#resume"
-            className={`font-sans text-sm font-semibold lowercase px-4 py-1.5 rounded-full bg-orange text-white hover:bg-orange/85 transition-colors ${
+            className={`font-sans text-sm font-semibold px-4 py-1.5 rounded-full bg-orange text-white hover:bg-orange/85 transition-colors ${
               active === "resume" ? "ring-2 ring-orange/40" : ""
             }`}
           >
-            resume
+            Resume
           </a>
         </div>
 
@@ -315,7 +318,7 @@ const Navbar = () => {
               key={l.href}
               href={l.href}
               onClick={() => setMobileOpen(false)}
-              className="font-sans text-sm font-medium lowercase text-dark/70 hover:text-orange transition-colors"
+              className="font-sans text-sm font-medium text-dark/70 hover:text-orange transition-colors"
             >
               {l.label}
             </a>
@@ -323,9 +326,9 @@ const Navbar = () => {
           <a
             href="#resume"
             onClick={() => setMobileOpen(false)}
-            className="font-sans text-sm font-medium lowercase text-orange"
+            className="font-sans text-sm font-medium text-orange"
           >
-            resume
+            Resume
           </a>
           <div className="flex items-center gap-5 pt-2">
             {socialIcons.map((s) => (
@@ -357,10 +360,7 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-visible pt-20 pb-16 px-6">
-      {/*
-       * ── Subtle geometric accents (hero only) ──────────────────────────────
-       * Thin outlines + micro-dots at 8–12% opacity. Not on any other section.
-       */}
+      {/* Geometric accents (hero only) */}
       <motion.div style={{ y: a1y }} className="absolute top-[12%] left-[5%] pointer-events-none select-none">
         <GeomCircle className="w-14 h-14 text-orange opacity-[0.09]" />
       </motion.div>
@@ -383,7 +383,7 @@ const Hero = () => {
       <div className="max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-20 items-center">
 
-          {/* ── Left: copy ── */}
+          {/* Left: copy */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
@@ -393,74 +393,65 @@ const Hero = () => {
             <div className="inline-flex items-center gap-2 bg-orange-pale border border-orange/20 rounded-full px-4 py-1.5 mb-9">
               <span className="w-1.5 h-1.5 rounded-full bg-orange animate-pulse" />
               <span className="font-sans font-medium text-orange text-sm">
-                open to full-time · summer 2026
+                Open to Full-Time · Summer 2026
               </span>
             </div>
 
             {/* Name */}
             <h1
-              className="font-display font-black lowercase text-dark leading-[0.92] mb-5"
+              className="font-display font-black text-dark leading-[0.92] mb-5"
               style={{ fontSize: "clamp(3.2rem, 9vw, 7.5rem)" }}
             >
-              shashwat
+              Shashwat
               <br />
-              <span className="text-orange">tiwari.</span>
+              <span className="text-orange">Tiwari.</span>
             </h1>
 
             {/* Typewriter */}
-            <p className="font-display font-bold text-xl md:text-2xl text-dark/55 lowercase mb-9 h-9">
-              <Typewriter texts={["Software Engineer", "AI Engineer", "TA @ northeastern"]} />
+            <p className="font-display font-bold text-xl md:text-2xl text-dark/55 mb-9 h-9">
+              <Typewriter texts={["Software Engineer", "ML Engineer", "TA @ Northeastern"]} />
             </p>
 
             {/* Stat pills */}
             <div className="flex flex-wrap gap-2.5">
               {[
-                { emoji: "📍", text: "Boston, ma" },
-                { emoji: "🎓", text: "MS CS @ northeastern" },
-                { emoji: "💼", text: "prev. Bain & Co and Aftershoot Inc" },
-              ].map((p) => (
+                "Boston, MA",
+                "MS CS @ Northeastern",
+                "Prev. Bain & Aftershoot",
+              ].map((text) => (
                 <span
-                  key={p.text}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-white border border-dark/8 px-4 py-1.5 shadow-sm font-sans text-sm text-dark/65 lowercase"
+                  key={text}
+                  className="inline-flex items-center rounded-full bg-white border border-dark/8 px-4 py-1.5 shadow-sm font-sans text-sm text-dark/65"
                 >
-                  <span className="text-base leading-none">{p.emoji}</span>
-                  {p.text}
+                  {text}
                 </span>
               ))}
             </div>
           </motion.div>
 
-          {/* ── Right: polaroids - ~35% larger ── */}
+          {/* Right: photo — clean, straight, orange offset */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="flex justify-center md:justify-end relative"
+            className="flex justify-center md:justify-end"
           >
-            {/* Boston polaroid peeking behind - enlarged from w-36 → w-48 */}
-            <div
-              className="absolute right-2 top-4 w-48 opacity-70"
-              style={{ transform: "rotate(6deg)" }}
-            >
-              <div className="polaroid-frame">
-                <div className="overflow-hidden bg-gray-100 aspect-[3/4] w-full">
-                  <img
-                    src={`${BASE}photos/boston.jpeg`}
-                    alt="Boston"
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
+            <div className="relative">
+              {/* Orange accent offset behind */}
+              <div className="absolute -bottom-4 -right-4 w-full h-full rounded-2xl border-2 border-orange/35 pointer-events-none" />
+              {/* Photo */}
+              <motion.div
+                className="relative w-64 md:w-80 rounded-2xl overflow-hidden shadow-2xl"
+                whileHover={{ scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
+              >
+                <img
+                  src={`${BASE}photos/stadium.jpg`}
+                  alt="Shashwat Tiwari"
+                  className="w-full aspect-[3/4] object-cover"
+                  loading="lazy"
+                />
+              </motion.div>
             </div>
-
-            {/* Main polaroid - enlarged from w-44 md:w-52 → w-60 md:w-72 */}
-            <Polaroid
-              src={`${BASE}photos/stadium.jpeg`}
-              alt="Shashwat at soccer game"
-              rotate={-4}
-              className="w-60 md:w-72 relative z-10"
-            />
           </motion.div>
         </div>
       </div>
@@ -473,11 +464,11 @@ const Hero = () => {
 const AboutMe = () => (
   <section id="about" className="py-24 px-6 bg-paper">
     <div className="max-w-6xl mx-auto">
-      <SectionHeading label="who am i" title="about me" accent="orange" />
+      <SectionHeading label="Who Am I" title="About Me" accent="orange" />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-16 items-start">
 
-        {/* ── Left: bio + photo cluster ── */}
+        {/* Left: bio + photo cluster */}
         <div>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -486,12 +477,12 @@ const AboutMe = () => (
             transition={{ duration: 0.6 }}
             className="font-sans text-lg text-dark/75 leading-relaxed mb-12 max-w-[52ch]"
           >
-            I build things that work - and care about why they work. ML pipelines at bain,
-            CV systems at aftershoot, and a few projects i'm genuinely proud of in between.
-            A recent MS CS graduate from Northeastern, based in boston.
+            I build things that work — and care about why they work. ML pipelines at Bain,
+            CV systems at Aftershoot, and a few projects I'm genuinely proud of in between.
+            Currently pursuing MS CS at Northeastern, based in Boston.
           </motion.p>
 
-          {/* Photo cluster - 4 plain images, no polaroid frames */}
+          {/* Photo cluster — 4 plain images, no polaroid frames */}
           <PhotoCluster />
 
           {/* Beyond my resume */}
@@ -502,22 +493,21 @@ const AboutMe = () => (
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mt-4"
           >
-            <p className="font-sans text-sm font-semibold text-dark/70 lowercase mb-4">
-              Beyond my resume, I'm also into..
+            <p className="font-sans text-sm font-semibold text-dark/70 mb-4">
+              Beyond my resume, I also...
             </p>
             <div className="flex flex-wrap gap-2.5">
               {[
-                { emoji: "⚽", label: "football (barça fan)", bg: "bg-orange-pale text-orange border-orange/20" },
-                { emoji: "🎵", label: "live music",         bg: "bg-purple-pale text-purple border-purple/20" },
-                { emoji: "📸", label: "photography", bg: "bg-orange-pale text-orange border-orange/20" },
-                { emoji: "🍔", label: "food hunting",       bg: "bg-purple-pale text-purple border-purple/20" },
-                { emoji: "🌆", label: "city exploring",     bg: "bg-orange-pale text-orange border-orange/20" },
+                { label: "Soccer (Barça Fan)", bg: "bg-orange-pale text-orange border-orange/20" },
+                { label: "Live Music",         bg: "bg-purple-pale text-purple border-purple/20" },
+                { label: "Street Photography", bg: "bg-orange-pale text-orange border-orange/20" },
+                { label: "Food Hunting",       bg: "bg-purple-pale text-purple border-purple/20" },
+                { label: "City Exploring",     bg: "bg-orange-pale text-orange border-orange/20" },
               ].map((h) => (
                 <span
                   key={h.label}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 border text-sm font-sans font-medium ${h.bg}`}
+                  className={`inline-flex items-center rounded-full px-4 py-1.5 border text-sm font-sans font-medium ${h.bg}`}
                 >
-                  <span className="text-base leading-none">{h.emoji}</span>
                   {h.label}
                 </span>
               ))}
@@ -525,10 +515,10 @@ const AboutMe = () => (
           </motion.div>
         </div>
 
-        {/* ── Right: education cards ── */}
+        {/* Right: education cards */}
         <div>
-          <p className="font-sans text-sm font-semibold text-dark/70 lowercase mb-6">
-            education 🎓
+          <p className="font-sans text-sm font-semibold text-dark/70 mb-6">
+            Education
           </p>
           <div className="flex flex-col gap-5">
             {[
@@ -537,7 +527,7 @@ const AboutMe = () => (
                 name: "Northeastern University",
                 degree: "MS Computer Science",
                 gpa: "4.0 / 4.0",
-                period: "2024 - 2026",
+                period: "2024 — 2026",
                 color: "#d41c2c",
                 border: "border-[#d41c2c]/25",
               },
@@ -546,7 +536,7 @@ const AboutMe = () => (
                 name: "Shiv Nadar University",
                 degree: "BS Computer Science",
                 gpa: "3.5 / 4.0",
-                period: "2020 - 2024",
+                period: "2020 — 2024",
                 color: "#1270b7",
                 border: "border-[#1270b7]/25",
               },
@@ -566,14 +556,14 @@ const AboutMe = () => (
                   referrerPolicy="no-referrer"
                 />
                 <div className="min-w-0">
-                  <p className="font-display font-bold text-sm lowercase text-dark leading-tight">
+                  <p className="font-display font-bold text-sm text-dark leading-tight">
                     {edu.name}
                   </p>
                   <p className="font-sans text-sm font-semibold mt-0.5" style={{ color: edu.color }}>
                     {edu.degree}
                   </p>
                   <p className="font-sans text-xs text-dark/45 mt-1">
-                    gpa {edu.gpa} · {edu.period}
+                    GPA {edu.gpa} · {edu.period}
                   </p>
                 </div>
               </motion.div>
@@ -586,8 +576,6 @@ const AboutMe = () => (
 );
 
 // ─── Snapshot (Bento) ─────────────────────────────────────────────────────────
-// "in a snapshot" - 3-col bento grid: Education (2col), Experience (1col),
-// Tools & Platforms (2col), Find me on (1col), orange stat tile (full-width).
 
 const Snapshot = () => (
   <section id="snapshot" className="py-20 px-6">
@@ -600,16 +588,16 @@ const Snapshot = () => (
         className="mb-12"
       >
         <p className="font-sans text-xs font-semibold tracking-widest uppercase text-purple mb-2">
-          quick facts
+          Quick Facts
         </p>
-        <h2 className="font-display font-black text-3xl md:text-4xl lowercase text-dark leading-tight">
-          in a snapshot.
+        <h2 className="font-display font-black text-3xl md:text-4xl text-dark leading-tight">
+          In a Snapshot.
         </h2>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        {/* ── Education - col-span-2 ── */}
+        {/* Education — col-span-2 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -618,23 +606,23 @@ const Snapshot = () => (
           className="md:col-span-2 bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
         >
           <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
-            education
+            Education
           </p>
           <div className="flex flex-col gap-5">
             {[
               {
                 logo: `${BASE}NEU.png`,
-                name: "northeastern university",
-                degree: "ms computer science",
+                name: "Northeastern University",
+                degree: "MS Computer Science",
                 gpa: "4.0",
                 period: "2024–2026",
                 color: "#d41c2c",
               },
               {
                 logo: `${BASE}sn-logo.png`,
-                name: "shiv nadar university",
-                degree: "bs computer science",
-                gpa: "3.8",
+                name: "Shiv Nadar University",
+                degree: "BS Computer Science",
+                gpa: "3.5",
                 period: "2020–2024",
                 color: "#1270b7",
               },
@@ -647,11 +635,11 @@ const Snapshot = () => (
                   referrerPolicy="no-referrer"
                 />
                 <div>
-                  <p className="font-display font-bold text-sm lowercase text-dark leading-tight">
+                  <p className="font-display font-bold text-sm text-dark leading-tight">
                     {edu.name}
                   </p>
                   <p className="font-sans text-xs font-medium mt-0.5" style={{ color: edu.color }}>
-                    {edu.degree} · gpa {edu.gpa} · {edu.period}
+                    {edu.degree} · GPA {edu.gpa} · {edu.period}
                   </p>
                 </div>
               </div>
@@ -659,7 +647,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Experience summary - col-span-1 ── */}
+        {/* Experience summary — col-span-1 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -668,17 +656,17 @@ const Snapshot = () => (
           className="bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
         >
           <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
-            experience
+            Experience
           </p>
           <div className="flex flex-col gap-3.5">
             {[
-              { name: "aftershoot inc.", color: "#006397", emoji: "💻" },
-              { name: "bain & company",  color: "#cc0000", emoji: "📊" },
-              { name: "northeastern TA", color: "#d41c2c", emoji: "🎓" },
+              { name: "Aftershoot Inc.", color: "#006397" },
+              { name: "Bain & Company",  color: "#cc0000" },
+              { name: "Northeastern TA", color: "#d41c2c" },
             ].map((e) => (
               <div key={e.name} className="flex items-center gap-2.5">
-                <span className="text-base leading-none">{e.emoji}</span>
-                <p className="font-sans text-sm font-medium lowercase" style={{ color: e.color }}>
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: e.color }} />
+                <p className="font-sans text-sm font-medium" style={{ color: e.color }}>
                   {e.name}
                 </p>
               </div>
@@ -686,7 +674,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Tools & Platforms - col-span-2 ── */}
+        {/* Tools & Platforms — col-span-2 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -695,7 +683,7 @@ const Snapshot = () => (
           className="md:col-span-2 bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
         >
           <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
-            tools & platforms
+            Tools & Platforms
           </p>
           <div className="flex flex-wrap gap-2">
             {[
@@ -712,7 +700,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Find me on - col-span-1 ── */}
+        {/* Find me on — col-span-1 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -721,25 +709,25 @@ const Snapshot = () => (
           className="bg-white rounded-2xl p-7 border border-dark/6 shadow-sm"
         >
           <p className="font-sans text-xs font-semibold uppercase tracking-widest text-dark/40 mb-5">
-            find me on
+            Find Me On
           </p>
           <div className="flex flex-col gap-4">
             {[
               {
                 icon: <GitHubIcon size={20} />,
-                label: "github",
+                label: "GitHub",
                 href: "https://github.com/shashhwatiwari",
                 color: "text-dark",
               },
               {
                 icon: <LinkedInIcon size={20} />,
-                label: "linkedin",
+                label: "LinkedIn",
                 href: "https://www.linkedin.com/in/shashwat-tiwari118/",
                 color: "text-[#0077b5]",
               },
               {
                 icon: <LeetCodeIcon size={20} />,
-                label: "leetcode",
+                label: "LeetCode",
                 href: "https://leetcode.com/u/shashwat__/",
                 color: "text-[#FFA116]",
               },
@@ -749,7 +737,7 @@ const Snapshot = () => (
                 href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`inline-flex items-center gap-3 font-sans text-sm font-medium lowercase hover:opacity-65 transition-opacity ${s.color}`}
+                className={`inline-flex items-center gap-3 font-sans text-sm font-medium hover:opacity-65 transition-opacity ${s.color}`}
               >
                 {s.icon}
                 {s.label}
@@ -758,7 +746,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Orange full-width stat tile - col-span-3 ── */}
+        {/* Full-width orange stat tile */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -768,17 +756,17 @@ const Snapshot = () => (
           style={{ background: "#FF6B35" }}
         >
           {[
-            { value: "4.0",  label: "gpa" },
-            { value: "2",    label: "internships" },
-            { value: "1",    label: "co-authored paper" },
-            { value: "10+",   label: "projects " },
-            { value: "300+", label: "students taught" },
+            { value: "4.0",  label: "GPA" },
+            { value: "2",    label: "Internships" },
+            { value: "1",    label: "Co-authored Paper" },
+            { value: "5+",   label: "Projects Shipped" },
+            { value: "300+", label: "Students TA'd" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col">
               <span className="font-display font-black text-white text-3xl leading-none">
                 {stat.value}
               </span>
-              <span className="font-sans text-white/70 text-xs font-medium lowercase mt-1">
+              <span className="font-sans text-white/70 text-xs font-medium mt-1">
                 {stat.label}
               </span>
             </div>
@@ -795,38 +783,38 @@ const Snapshot = () => (
 const experienceData = [
   {
     year: "2023",
-    role: "software engineer intern",
+    role: "Software Engineer Intern",
     company: "Aftershoot Inc.",
     logo: `${BASE}aftershoot-logo.png`,
     companyColor: "#006397",
-    period: "may - jul 2023",
+    period: "May — Jul 2023",
     type: "professional" as const,
     description:
-      "High-throughput stripe telemetry pipelines; etl rewrite python → rust (3× faster, 45% less memory); cnn models for blur detection and sharpness scoring; automated CI/CD with Docker.",
+      "High-throughput Stripe telemetry pipelines; ETL rewrite Python → Rust (3× faster, 45% less memory); CNN models for blur detection and sharpness scoring; automated CI/CD with Docker.",
     tags: ["Rust", "OpenCV", "Docker", "CNN", "Python"],
   },
   {
     year: "2024",
-    role: "data analyst intern",
+    role: "Data Analyst Intern",
     company: "Bain & Company",
     logo: `${BASE}bain-logo.png`,
     companyColor: "#cc0000",
-    period: "jan - jul 2024",
+    period: "Jan — Jul 2024",
     type: "professional" as const,
     description:
-      "ML pipelines for M&A deal screening across 20–75 datasets; k-means + hierarchical clustering cut manual review by 40%; arima + xgboost forecasting improved prioritization by 18%; NLP tagging pipeline.",
+      "ML pipelines for M&A deal screening across 20–75 datasets; K-means + hierarchical clustering cut manual review by 40%; ARIMA + XGBoost forecasting improved prioritization by 18%; NLP tagging pipeline.",
     tags: ["Python", "XGBoost", "NLP", "SQLAlchemy", "Pytest"],
   },
   {
     year: "2025–26",
-    role: "graduate teaching assistant",
+    role: "Graduate Teaching Assistant",
     company: "Northeastern University",
     logo: `${BASE}NEU.png`,
     companyColor: "#d41c2c",
-    period: "sept 2025 - may 2026",
+    period: "Sept 2025 — May 2026",
     type: "academic" as const,
     description:
-      "TA for CS5800: algorithms - graded 300+ students, held weekly office hours on dynamic programming, graph algorithms, and asymptotic notation; proctored mid-term and final exams.",
+      "TA for CS5800: Algorithms — graded 300+ students, held weekly office hours on dynamic programming, graph algorithms, and asymptotic notation; proctored mid-term and final exams.",
     tags: ["Algorithms", "Teaching", "CS5800"],
   },
 ];
@@ -840,10 +828,10 @@ const Experience = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <SectionHeading label="where i've worked" title="experience" accent="purple" />
+        <SectionHeading label="Where I've Worked" title="Experience" accent="purple" />
       </motion.div>
 
-      {/* ── Desktop: horizontal timeline ── */}
+      {/* Desktop: horizontal timeline */}
       <div className="hidden md:block relative">
         <div className="absolute top-[72px] left-0 right-0 h-[2px] bg-gradient-to-r from-orange via-purple to-orange opacity-30" />
 
@@ -857,18 +845,13 @@ const Experience = () => (
               transition={{ duration: 0.55, delay: i * 0.12 }}
               className="relative"
             >
-              {/* Year label */}
-              <p className="font-sans text-sm font-bold text-center mb-3 lowercase" style={{ color: exp.companyColor }}>
+              <p className="font-sans text-sm font-bold text-center mb-3" style={{ color: exp.companyColor }}>
                 {exp.year}
               </p>
-
-              {/* Timeline dot */}
               <div
                 className="absolute top-[68px] left-1/2 -translate-x-1/2 w-4 h-4 rounded-full border-[3px] border-cream z-10"
                 style={{ background: exp.companyColor }}
               />
-
-              {/* Card */}
               <div
                 className={`mt-16 bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300 ${
                   exp.type === "academic"
@@ -879,7 +862,7 @@ const Experience = () => (
                 <div className="flex items-center gap-3 mb-4">
                   <img src={exp.logo} alt={exp.company} className="h-8 object-contain" referrerPolicy="no-referrer" />
                 </div>
-                <h3 className="font-display font-black text-base lowercase text-dark mb-0.5">
+                <h3 className="font-display font-black text-base text-dark mb-0.5">
                   {exp.role}
                 </h3>
                 <p className="font-sans text-sm font-semibold mb-1" style={{ color: exp.companyColor }}>
@@ -900,7 +883,7 @@ const Experience = () => (
         </div>
       </div>
 
-      {/* ── Mobile: vertical timeline ── */}
+      {/* Mobile: vertical timeline */}
       <div className="md:hidden relative pl-10">
         <div className="absolute top-0 left-3.5 bottom-0 w-[2px] bg-gradient-to-b from-orange to-purple opacity-30" />
 
@@ -918,7 +901,7 @@ const Experience = () => (
                 className="absolute -left-[30px] top-5 w-4 h-4 rounded-full border-[3px] border-cream z-10"
                 style={{ background: exp.companyColor }}
               />
-              <p className="font-sans text-sm font-bold mb-1 lowercase" style={{ color: exp.companyColor }}>
+              <p className="font-sans text-sm font-bold mb-1" style={{ color: exp.companyColor }}>
                 {exp.year}
               </p>
               <div
@@ -928,7 +911,7 @@ const Experience = () => (
                     : "border-2 border-orange/25"
                 }`}
               >
-                <h3 className="font-display font-black text-sm lowercase text-dark mb-0.5">{exp.role}</h3>
+                <h3 className="font-display font-black text-sm text-dark mb-0.5">{exp.role}</h3>
                 <p className="font-sans text-sm font-semibold mb-1" style={{ color: exp.companyColor }}>{exp.company}</p>
                 <p className="font-mono text-xs text-dark/40 mb-3">{exp.period}</p>
                 <p className="font-sans text-sm text-dark/65 leading-relaxed mb-3">{exp.description}</p>
@@ -949,17 +932,20 @@ const Experience = () => (
 );
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
-
+/*
+ * Project images: add files to /public/photos/projects/
+ *   kambaz.png · regtranslate.png · emotion.png · staffsync.png · concentrainer.png
+ */
 
 const projectsData = [
   {
     name: "Kambaz",
     category: "Full-Stack",
     accent: "orange" as const,
-    href: "https://github.com/shashhwatiwari/kambaz-react-web-app",
+    href: "#",
     image: `${BASE}photos/projects/kambaz.png`,
     description:
-      "Scalable learning management platform built with the mern stack - modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
+      "Scalable learning management platform built with the MERN stack — modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
   },
   {
@@ -969,37 +955,37 @@ const projectsData = [
     href: "https://regtranslate.vercel.app/",
     image: `${BASE}photos/projects/regtranslate.png`,
     description:
-      "rag-based compliance platform that converts hipaa/gdpr pdfs into actionable developer tasks using llama 3 + langchain. semantic search pipeline via chromadb.",
+      "RAG-based compliance platform that converts HIPAA/GDPR PDFs into actionable developer tasks using Llama 3 + LangChain. Semantic search pipeline via ChromaDB.",
     tags: ["Llama 3", "LangChain", "ChromaDB", "FastAPI"],
   },
   {
     name: "Emotion Classifier",
-    category: "nlp",
+    category: "NLP",
     accent: "orange" as const,
     href: "#",
     image: `${BASE}photos/projects/emotion.png`,
     description:
-      "Fine-tuned bert on the goemotions dataset for multi-label emotion detection. delivers real-time music recommendations via whatsapp based on inferred user mood.",
+      "Fine-tuned BERT on the GoEmotions dataset for multi-label emotion detection. Delivers real-time music recommendations via WhatsApp based on inferred user mood.",
     tags: ["BERT", "PyTorch", "WhatsApp API", "FastAPI"],
   },
   {
     name: "StaffSync",
     category: "Full-Stack",
     accent: "purple" as const,
-    href: "https://github.com/shashhwatiwari/StaffSync",
+    href: "#",
     image: `${BASE}photos/projects/staffsync.png`,
     description:
-      "workforce scheduling platform with shift management, real-time notifications, and role-based access control. built with react + node.js + postgresql.",
+      "Workforce scheduling platform with shift management, real-time notifications, and role-based access control. Built with React + Node.js + PostgreSQL.",
     tags: ["React", "Node.js", "PostgreSQL", "AWS"],
   },
   {
     name: "ConcenTrainer",
-    category: "AI / HCI",
+    category: "AI / CV",
     accent: "orange" as const,
-    href: "https://www.figma.com/proto/fbitb69DpEi3DYhJcIqblL/ConcenTrainer-Iteration?node-id=195-126&p=f&t=ci9GM4EQuiHe0Eg3-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=195%3A126",
+    href: "#",
     image: `${BASE}photos/projects/concentrainer.png`,
     description:
-      "Focus enhancement app using pomodoro-style intervals with real-time engagement scoring - mediapipe-powered posture and attention analysis via webcam.",
+      "Focus enhancement app using Pomodoro-style intervals with real-time engagement scoring — MediaPipe-powered posture and attention analysis via webcam.",
     tags: ["MediaPipe", "Python", "React", "WebRTC"],
   },
 ];
@@ -1016,9 +1002,9 @@ const Projects = () => (
       >
         <div>
           <p className="font-sans text-xs font-semibold tracking-widest uppercase text-orange mb-2">
-            what i've built
+            What I've Built
           </p>
-          <h2 className="font-display font-black text-4xl md:text-5xl lowercase text-dark">projects</h2>
+          <h2 className="font-display font-black text-4xl md:text-5xl text-dark">Projects</h2>
           <div className="mt-3 h-1.5 w-14 rounded-full bg-orange" />
         </div>
         <a
@@ -1028,15 +1014,14 @@ const Projects = () => (
           className="hidden md:inline-flex items-center gap-2 font-sans text-sm font-medium text-dark/55 hover:text-orange transition-colors group"
         >
           <Github className="w-4 h-4" />
-          more on github
+          More on GitHub
           <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </a>
       </motion.div>
 
       {/*
        * 6-col grid: first 3 cards each span 2 cols (3 per row).
-       * 4th card: col-start-2 → cols 2–3 centered.
-       * 5th card: auto-places at cols 4–5 → both centered in the last row.
+       * 4th card: col-start-2 → cols 2–3. 5th auto-places at cols 4–5. Both centered.
        */}
       <div className="grid grid-cols-1 md:grid-cols-6 gap-5">
         {projectsData.map((proj, i) => (
@@ -1055,7 +1040,7 @@ const Projects = () => (
                 : "md:col-span-2"
             }`}
           >
-            {/* Project image - 180px, object-cover */}
+            {/* Project image — 180px, object-cover */}
             <div className="relative h-[180px] overflow-hidden bg-gray-100">
               <img
                 src={proj.image}
@@ -1077,7 +1062,7 @@ const Projects = () => (
 
             {/* Card content */}
             <div className="p-6">
-              <h3 className="font-display font-black text-lg lowercase text-dark mb-2 leading-tight">
+              <h3 className="font-display font-black text-lg text-dark mb-2 leading-tight">
                 {proj.name}
               </h3>
               <p className="font-sans text-sm text-dark/65 leading-relaxed mb-4">
@@ -1108,7 +1093,7 @@ const Projects = () => (
                       : "text-purple hover:text-purple/75"
                   }`}
                 >
-                  view project
+                  View Project
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </a>
               )}
@@ -1125,7 +1110,7 @@ const Projects = () => (
           className="inline-flex items-center gap-2 font-sans text-sm font-medium text-dark/55 hover:text-orange transition-colors"
         >
           <Github className="w-4 h-4" />
-          more on github →
+          More on GitHub →
         </a>
       </div>
     </div>
@@ -1133,7 +1118,6 @@ const Projects = () => (
 );
 
 // ─── GitHub Activity ───────────────────────────────────────────────────────────
-// Heatmap
 
 const GitHubActivity = () => (
   <section className="py-24 px-6">
@@ -1144,7 +1128,7 @@ const GitHubActivity = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <SectionHeading label="commit activity" title="on github" accent="orange" />
+        <SectionHeading label="Commit Activity" title="On GitHub" accent="orange" />
       </motion.div>
 
       <motion.div
@@ -1169,13 +1153,13 @@ const GitHubActivity = () => (
 // ─── Skills ───────────────────────────────────────────────────────────────────
 
 const skillCategories = [
-  { name: "Languages",  accent: "orange" as const, skills: ["Python", "SQL", "TypeScript", "C / C++", "Rust"] },
-  { name: "Backend",    accent: "purple" as const, skills: ["Node.js", "Express", "FastAPI", "REST APIs"] },
-  { name: "Frontend",   accent: "orange" as const, skills: ["React", "Tailwind CSS", "HTML / CSS"] },
-  { name: "AI / ML",   emoji: "🤖", accent: "purple" as const, skills: ["PyTorch", "LangChain", "BERT", "scikit-learn", "OpenCV"] },
-  { name: "Cloud",     emoji: "☁️",  accent: "orange" as const, skills: ["AWS Lambda", "Bedrock", "S3"] },
-  { name: "DevOps",    emoji: "🚀", accent: "purple" as const, skills: ["Docker", "GitHub Actions", "CI / CD"] },
-  { name: "Databases", emoji: "🗄️", accent: "orange" as const, skills: ["PostgreSQL", "MongoDB", "ChromaDB", "BigQuery"] },
+  { name: "Languages", accent: "orange" as const, skills: ["Python", "SQL", "TypeScript", "C / C++", "Rust"] },
+  { name: "Backend",   accent: "purple" as const, skills: ["Node.js", "Express", "FastAPI", "REST APIs"] },
+  { name: "Frontend",  accent: "orange" as const, skills: ["React", "Tailwind CSS", "HTML / CSS"] },
+  { name: "AI / ML",   accent: "purple" as const, skills: ["PyTorch", "LangChain", "BERT", "scikit-learn", "OpenCV"] },
+  { name: "Cloud",     accent: "orange" as const, skills: ["AWS Lambda", "Bedrock", "S3"] },
+  { name: "DevOps",    accent: "purple" as const, skills: ["Docker", "GitHub Actions", "CI / CD"] },
+  { name: "Databases", accent: "orange" as const, skills: ["PostgreSQL", "MongoDB", "ChromaDB", "BigQuery"] },
 ];
 
 const Skills = () => (
@@ -1187,7 +1171,7 @@ const Skills = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <SectionHeading label="my toolbox" title="technical core" accent="purple" />
+        <SectionHeading label="My Toolbox" title="Technical Core" accent="purple" />
       </motion.div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -1201,7 +1185,7 @@ const Skills = () => (
             className="bg-white rounded-2xl p-5 shadow-sm border border-dark/5"
           >
             <p className={`font-sans text-sm font-semibold mb-3 ${cat.accent === "orange" ? "text-orange" : "text-purple"}`}>
-              {cat.emoji} {cat.name}
+              {cat.name}
             </p>
             <div className="flex flex-wrap gap-2">
               {cat.skills.map((skill) => (
@@ -1227,8 +1211,8 @@ const Skills = () => (
 // ─── Resume ───────────────────────────────────────────────────────────────────
 /*
  * TODO: Add the following files to /public/
- *   resume-preview.png  - screenshot / exported thumbnail of your resume PDF
- *   resume.pdf          - the actual resume document
+ *   resume-preview.png  — screenshot / exported thumbnail of your resume PDF
+ *   resume.pdf          — the actual resume document
  */
 
 const Resume = () => (
@@ -1240,7 +1224,7 @@ const Resume = () => (
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <SectionHeading label="my resume" title="resume" accent="purple" />
+        <SectionHeading label="My Resume" title="Resume" accent="purple" />
       </motion.div>
 
       <div className="flex flex-col md:flex-row items-start gap-10">
@@ -1269,15 +1253,15 @@ const Resume = () => (
           className="flex flex-col justify-center gap-5"
         >
           <p className="font-sans text-lg text-dark/65 leading-relaxed max-w-[48ch]">
-            one page. everything you need to know - experience, education, projects, and skills.
+            One page. Everything you need to know — experience, education, projects, and skills.
           </p>
           <a
             href={`${BASE}resume.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-purple text-white font-display font-bold lowercase px-7 py-3.5 rounded-xl hover:bg-purple/85 transition-colors w-fit text-base"
+            className="inline-flex items-center gap-2 bg-purple text-white font-display font-bold px-7 py-3.5 rounded-xl hover:bg-purple/85 transition-colors w-fit text-base"
           >
-            open full resume ↗
+            Open Full Resume ↗
           </a>
         </motion.div>
       </div>
@@ -1298,24 +1282,24 @@ const Contact = () => (
     >
       <div className="max-w-2xl">
         <p className="font-sans text-xs font-semibold tracking-widest uppercase text-purple-light mb-4">
-          let's connect
+          Let's Connect
         </p>
         <h2
-          className="font-display font-black text-white lowercase leading-[0.95] mb-7"
+          className="font-display font-black text-white leading-[0.95] mb-7"
           style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
         >
-          got something
+          Got Something
           <br />
-          <span className="text-orange">worth making?</span>
+          <span className="text-orange">Worth Making?</span>
         </h2>
         <p className="font-sans text-white/45 leading-relaxed mb-12 text-lg max-w-[48ch]">
-          i'm actively looking for full-time roles from summer 2026.
-          if you're building something interesting or just want to connect - i'd always be interested.
+          I'm actively looking for full-time roles from Summer 2026.
+          If you're building something interesting — I'd genuinely like to hear it.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
             href="mailto:tiwari.sha@northeastern.edu"
-            className="inline-flex items-center justify-center gap-2.5 bg-orange text-white font-display font-bold text-base lowercase px-8 py-4 rounded-2xl hover:bg-orange/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2.5 bg-orange text-white font-display font-bold text-base px-8 py-4 rounded-2xl hover:bg-orange/90 transition-colors"
           >
             <Mail className="w-5 h-5" />
             tiwari.sha@northeastern.edu
@@ -1324,10 +1308,10 @@ const Contact = () => (
             href="https://www.linkedin.com/in/shashwat-tiwari118/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2.5 border-2 border-white/15 text-white font-display font-bold text-base lowercase px-8 py-4 rounded-2xl hover:border-orange/50 hover:text-orange transition-colors"
+            className="inline-flex items-center justify-center gap-2.5 border-2 border-white/15 text-white font-display font-bold text-base px-8 py-4 rounded-2xl hover:border-orange/50 hover:text-orange transition-colors"
           >
             <Linkedin className="w-5 h-5" />
-            linkedin
+            LinkedIn
           </a>
         </div>
       </div>
@@ -1341,34 +1325,34 @@ const Footer = () => (
   <footer className="border-t border-dark/8 bg-cream">
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
       <div>
-        <span className="font-display font-black text-sm text-dark lowercase">shashwat tiwari</span>
+        <span className="font-display font-black text-sm text-dark">Shashwat Tiwari</span>
         <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-dark/30 mt-1">
-          © 2025 - built with react & tailwind
+          © 2025 — Built with React & Tailwind
         </p>
       </div>
 
-      {/* Social icons - 32px with text labels */}
+      {/* Social icons — 32px with text labels */}
       <div className="flex items-center gap-8">
         {[
           {
             href: "https://github.com/shashhwatiwari",
             icon: <GitHubIcon size={32} />,
-            label: "github",
+            label: "GitHub",
           },
           {
             href: "https://www.linkedin.com/in/shashwat-tiwari118/",
             icon: <LinkedInIcon size={32} />,
-            label: "linkedin",
+            label: "LinkedIn",
           },
           {
             href: "https://leetcode.com/u/shashwat__/",
             icon: <LeetCodeIcon size={32} />,
-            label: "leetcode",
+            label: "LeetCode",
           },
           {
             href: "mailto:tiwari.sha@northeastern.edu",
             icon: <Mail className="w-8 h-8" />,
-            label: "email",
+            label: "Email",
             noBlank: true,
           },
         ].map((l) => (
@@ -1380,7 +1364,7 @@ const Footer = () => (
             className="flex flex-col items-center gap-1.5 text-dark/35 hover:text-orange transition-colors"
           >
             {l.icon}
-            <span className="font-sans text-xs lowercase">{l.label}</span>
+            <span className="font-sans text-xs">{l.label}</span>
           </a>
         ))}
       </div>

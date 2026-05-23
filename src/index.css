@@ -1,12 +1,12 @@
 /* ── Fonts ────────────────────────────────────────────────────────────────── */
-/* Only two font families: Nunito (display) + Inter (body). No third font.   */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Two font families: Poppins (display/headings) + Inter (body).             */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   /* ─ Font stacks ─────────────────────────────────────────────────────────── */
   --font-sans:    "Inter",   ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Nunito",  sans-serif;
+  --font-display: "Poppins", sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   /* ─ Brand colors ─────────────────────────────────────────────────────────── */
@@ -39,7 +39,7 @@
 
 @layer utilities {
   /* Display font helper */
-  .font-display { font-family: "Nunito", sans-serif; }
+  .font-display { font-family: "Poppins", sans-serif; }
 
   /* Polaroid frame */
   .polaroid-frame {
