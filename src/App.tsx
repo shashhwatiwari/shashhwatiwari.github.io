@@ -236,8 +236,13 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="font-display font-black text-xl text-dark hover:text-orange transition-colors">
-          Shashwat.
+        <a href="#" className="flex flex-col leading-none group">
+          <span className="font-display font-black text-xl text-dark group-hover:text-orange transition-colors">
+            Shashwat.
+          </span>
+          <span className="font-sans text-[10px] font-medium tracking-wide text-dark/40 mt-0.5">
+            AI Engineer | Data | Software
+          </span>
         </a>
 
         <div className="hidden md:flex items-center gap-7">
@@ -396,7 +401,7 @@ const Hero = () => {
 
             {/* Typewriter */}
             <p className="font-display font-bold text-xl md:text-2xl text-dark/55 mb-9 h-9">
-              <Typewriter texts={["Software Engineer", "ML Engineer", "TA @ Northeastern"]} />
+              <Typewriter texts={["Software Engineer", "AI Engineer", "TA @ Northeastern"]} />
             </p>
 
             {/* Stat pills */}
@@ -487,7 +492,7 @@ const AboutMe = () => (
               {[
                 { label: "Soccer (Barça Fan)", bg: "bg-orange-pale text-orange border-orange/20" },
                 { label: "Live Music",         bg: "bg-purple-pale text-purple border-purple/20" },
-                { label: "Street Photography", bg: "bg-orange-pale text-orange border-orange/20" },
+                { label: "Photography", bg: "bg-orange-pale text-orange border-orange/20" },
                 { label: "Food Hunting",       bg: "bg-purple-pale text-purple border-purple/20" },
                 { label: "City Exploring",     bg: "bg-orange-pale text-orange border-orange/20" },
               ].map((h) => (
@@ -522,7 +527,7 @@ const AboutMe = () => (
                 logo: `${BASE}sn-logo.png`,
                 name: "Shiv Nadar University",
                 degree: "BS Computer Science",
-                gpa: "3.5 / 4.0",
+                gpa: "3.8 / 4.0",
                 period: "2020 - 2024",
                 color: "#1270b7",
                 border: "border-[#1270b7]/25",
@@ -609,7 +614,7 @@ const Snapshot = () => (
                 logo: `${BASE}sn-logo.png`,
                 name: "Shiv Nadar University",
                 degree: "BS Computer Science",
-                gpa: "3.5",
+                gpa: "3.8",
                 period: "2020–2024",
                 color: "#1270b7",
               },
@@ -972,7 +977,7 @@ const projectsData = [
     href: "#",
     image: `${BASE}photos/projects/concentrainer.png`,
     description:
-      "Focus enhancement app using Pomodoro-style intervals with real-time engagement scoring - MediaPipe-powered posture and attention analysis via webcam.",
+      "Focus enhancement overlay that lets you set up your reading environment as per your liking.",
     tags: ["MediaPipe", "Python", "React", "WebRTC"],
   },
 ];
