@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Shashwat Tiwari — Portfolio
+ * Shashwat Tiwari - Portfolio
  * Fonts: Poppins (display) + Inter (body).
  */
 
@@ -125,19 +125,6 @@ const PhotoCluster = () => {
           />
         </motion.div>
       ))}
-
-      {/* "More of me." overlay centered on cluster */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ zIndex: 20 }}
-      >
-        <span
-          className="font-display font-bold text-white text-base px-5 py-2 rounded-full"
-          style={{ background: "rgba(26,26,46,0.45)", backdropFilter: "blur(4px)" }}
-        >
-          More of me.
-        </span>
-      </div>
     </motion.div>
   );
 };
@@ -271,7 +258,7 @@ const Navbar = () => {
           {/* Separator */}
           <span className="h-4 w-px bg-dark/15" />
 
-          {/* Social icons — 24px, before Resume button */}
+          {/* Social icons - 24px, before Resume button */}
           {socialIcons.map((s) => (
             <a
               key={s.label}
@@ -429,7 +416,7 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          {/* Right: photo — clean, straight, orange offset */}
+          {/* Right: photo - clean, straight, orange offset */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
@@ -445,7 +432,7 @@ const Hero = () => {
                 whileHover={{ scale: 1.02, transition: { duration: 0.3, ease: "easeOut" } }}
               >
                 <img
-                  src={`${BASE}photos/stadium.jpg`}
+                  src={`${BASE}photos/stadium.jpeg`}
                   alt="Shashwat Tiwari"
                   className="w-full aspect-[3/4] object-cover"
                   loading="lazy"
@@ -477,12 +464,12 @@ const AboutMe = () => (
             transition={{ duration: 0.6 }}
             className="font-sans text-lg text-dark/75 leading-relaxed mb-12 max-w-[52ch]"
           >
-            I build things that work — and care about why they work. ML pipelines at Bain,
+            I build things that work - and care about why they work. ML pipelines at Bain,
             CV systems at Aftershoot, and a few projects I'm genuinely proud of in between.
             Currently pursuing MS CS at Northeastern, based in Boston.
           </motion.p>
 
-          {/* Photo cluster — 4 plain images, no polaroid frames */}
+          {/* Photo cluster - 4 plain images, no polaroid frames */}
           <PhotoCluster />
 
           {/* Beyond my resume */}
@@ -527,7 +514,7 @@ const AboutMe = () => (
                 name: "Northeastern University",
                 degree: "MS Computer Science",
                 gpa: "4.0 / 4.0",
-                period: "2024 — 2026",
+                period: "2024 - 2026",
                 color: "#d41c2c",
                 border: "border-[#d41c2c]/25",
               },
@@ -536,7 +523,7 @@ const AboutMe = () => (
                 name: "Shiv Nadar University",
                 degree: "BS Computer Science",
                 gpa: "3.5 / 4.0",
-                period: "2020 — 2024",
+                period: "2020 - 2024",
                 color: "#1270b7",
                 border: "border-[#1270b7]/25",
               },
@@ -597,7 +584,7 @@ const Snapshot = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        {/* Education — col-span-2 */}
+        {/* Education - col-span-2 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -647,7 +634,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* Experience summary — col-span-1 */}
+        {/* Experience summary - col-span-1 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -674,7 +661,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* Tools & Platforms — col-span-2 */}
+        {/* Tools & Platforms - col-span-2 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -700,7 +687,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* Find me on — col-span-1 */}
+        {/* Find me on - col-span-1 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -787,7 +774,7 @@ const experienceData = [
     company: "Aftershoot Inc.",
     logo: `${BASE}aftershoot-logo.png`,
     companyColor: "#006397",
-    period: "May — Jul 2023",
+    period: "May - Jul 2023",
     type: "professional" as const,
     description:
       "High-throughput Stripe telemetry pipelines; ETL rewrite Python → Rust (3× faster, 45% less memory); CNN models for blur detection and sharpness scoring; automated CI/CD with Docker.",
@@ -799,7 +786,7 @@ const experienceData = [
     company: "Bain & Company",
     logo: `${BASE}bain-logo.png`,
     companyColor: "#cc0000",
-    period: "Jan — Jul 2024",
+    period: "Jan - Jul 2024",
     type: "professional" as const,
     description:
       "ML pipelines for M&A deal screening across 20–75 datasets; K-means + hierarchical clustering cut manual review by 40%; ARIMA + XGBoost forecasting improved prioritization by 18%; NLP tagging pipeline.",
@@ -811,10 +798,10 @@ const experienceData = [
     company: "Northeastern University",
     logo: `${BASE}NEU.png`,
     companyColor: "#d41c2c",
-    period: "Sept 2025 — May 2026",
+    period: "Sept 2025 - May 2026",
     type: "academic" as const,
     description:
-      "TA for CS5800: Algorithms — graded 300+ students, held weekly office hours on dynamic programming, graph algorithms, and asymptotic notation; proctored mid-term and final exams.",
+      "TA for CS5800: Algorithms - graded 300+ students, held weekly office hours on dynamic programming, graph algorithms, and asymptotic notation; proctored mid-term and final exams.",
     tags: ["Algorithms", "Teaching", "CS5800"],
   },
 ];
@@ -945,7 +932,7 @@ const projectsData = [
     href: "#",
     image: `${BASE}photos/projects/kambaz.png`,
     description:
-      "Scalable learning management platform built with the MERN stack — modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
+      "Scalable learning management platform built with the MERN stack - modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
   },
   {
@@ -985,7 +972,7 @@ const projectsData = [
     href: "#",
     image: `${BASE}photos/projects/concentrainer.png`,
     description:
-      "Focus enhancement app using Pomodoro-style intervals with real-time engagement scoring — MediaPipe-powered posture and attention analysis via webcam.",
+      "Focus enhancement app using Pomodoro-style intervals with real-time engagement scoring - MediaPipe-powered posture and attention analysis via webcam.",
     tags: ["MediaPipe", "Python", "React", "WebRTC"],
   },
 ];
@@ -1040,7 +1027,7 @@ const Projects = () => (
                 : "md:col-span-2"
             }`}
           >
-            {/* Project image — 180px, object-cover */}
+            {/* Project image - 180px, object-cover */}
             <div className="relative h-[180px] overflow-hidden bg-gray-100">
               <img
                 src={proj.image}
@@ -1211,8 +1198,8 @@ const Skills = () => (
 // ─── Resume ───────────────────────────────────────────────────────────────────
 /*
  * TODO: Add the following files to /public/
- *   resume-preview.png  — screenshot / exported thumbnail of your resume PDF
- *   resume.pdf          — the actual resume document
+ *   resume-preview.png  - screenshot / exported thumbnail of your resume PDF
+ *   resume.pdf          - the actual resume document
  */
 
 const Resume = () => (
@@ -1253,7 +1240,7 @@ const Resume = () => (
           className="flex flex-col justify-center gap-5"
         >
           <p className="font-sans text-lg text-dark/65 leading-relaxed max-w-[48ch]">
-            One page. Everything you need to know — experience, education, projects, and skills.
+            One page. Everything you need to know - experience, education, projects, and skills.
           </p>
           <a
             href={`${BASE}resume.pdf`}
@@ -1294,7 +1281,7 @@ const Contact = () => (
         </h2>
         <p className="font-sans text-white/45 leading-relaxed mb-12 text-lg max-w-[48ch]">
           I'm actively looking for full-time roles from Summer 2026.
-          If you're building something interesting — I'd genuinely like to hear it.
+          If you're building something interesting - I'd genuinely like to hear it.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
@@ -1327,11 +1314,11 @@ const Footer = () => (
       <div>
         <span className="font-display font-black text-sm text-dark">Shashwat Tiwari</span>
         <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-dark/30 mt-1">
-          © 2025 — Built with React & Tailwind
+          © 2025 - Built with React & Tailwind
         </p>
       </div>
 
-      {/* Social icons — 32px with text labels */}
+      {/* Social icons - 32px with text labels */}
       <div className="flex items-center gap-8">
         {[
           {
