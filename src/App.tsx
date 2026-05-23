@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * Shashwat Tiwari — Portfolio
+ * Shashwat Tiwari - Portfolio
  * Fonts: Nunito (display) + Inter (body). No third font.
  */
 
@@ -13,7 +13,7 @@ import { Github, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 const BASE = import.meta.env.BASE_URL;
 
 // ─── Subtle Geometric Accents (hero only) ─────────────────────────────────────
-// Thin outlines and tiny dots at 8–12% opacity — design-portfolio aesthetic.
+// Thin outlines and tiny dots at 8–12% opacity - design-portfolio aesthetic.
 
 type GeomProps = { className?: string; style?: CSSProperties };
 
@@ -135,18 +135,6 @@ const PhotoCluster = () => {
         </motion.div>
       ))}
 
-      {/* "more of me." overlay centered on cluster */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ zIndex: 20 }}
-      >
-        <span
-          className="font-display font-black text-white text-base lowercase px-5 py-2 rounded-full"
-          style={{ background: "rgba(26,26,46,0.45)", backdropFilter: "blur(4px)" }}
-        >
-          more of me.
-        </span>
-      </div>
     </motion.div>
   );
 };
@@ -280,7 +268,7 @@ const Navbar = () => {
           {/* Separator */}
           <span className="h-4 w-px bg-dark/15" />
 
-          {/* Social icons — 24px, before Resume button */}
+          {/* Social icons - 24px, before Resume button */}
           {socialIcons.map((s) => (
             <a
               key={s.label}
@@ -294,7 +282,7 @@ const Navbar = () => {
             </a>
           ))}
 
-          {/* Resume button — links to #resume section */}
+          {/* Resume button - links to #resume section */}
           <a
             href="#resume"
             className={`font-sans text-sm font-semibold lowercase px-4 py-1.5 rounded-full bg-orange text-white hover:bg-orange/85 transition-colors ${
@@ -421,15 +409,15 @@ const Hero = () => {
 
             {/* Typewriter */}
             <p className="font-display font-bold text-xl md:text-2xl text-dark/55 lowercase mb-9 h-9">
-              <Typewriter texts={["software engineer", "ml engineer", "ta @ northeastern"]} />
+              <Typewriter texts={["Software Engineer", "AI Engineer", "TA @ northeastern"]} />
             </p>
 
             {/* Stat pills */}
             <div className="flex flex-wrap gap-2.5">
               {[
-                { emoji: "📍", text: "boston, ma" },
-                { emoji: "🎓", text: "ms cs @ northeastern" },
-                { emoji: "💼", text: "prev. bain & aftershoot" },
+                { emoji: "📍", text: "Boston, ma" },
+                { emoji: "🎓", text: "MS CS @ northeastern" },
+                { emoji: "💼", text: "prev. Bain & Co and Aftershoot Inc" },
               ].map((p) => (
                 <span
                   key={p.text}
@@ -442,14 +430,14 @@ const Hero = () => {
             </div>
           </motion.div>
 
-          {/* ── Right: polaroids — ~35% larger ── */}
+          {/* ── Right: polaroids - ~35% larger ── */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex justify-center md:justify-end relative"
           >
-            {/* Boston polaroid peeking behind — enlarged from w-36 → w-48 */}
+            {/* Boston polaroid peeking behind - enlarged from w-36 → w-48 */}
             <div
               className="absolute right-2 top-4 w-48 opacity-70"
               style={{ transform: "rotate(6deg)" }}
@@ -466,7 +454,7 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Main polaroid — enlarged from w-44 md:w-52 → w-60 md:w-72 */}
+            {/* Main polaroid - enlarged from w-44 md:w-52 → w-60 md:w-72 */}
             <Polaroid
               src={`${BASE}photos/stadium.jpeg`}
               alt="Shashwat at soccer game"
@@ -498,12 +486,12 @@ const AboutMe = () => (
             transition={{ duration: 0.6 }}
             className="font-sans text-lg text-dark/75 leading-relaxed mb-12 max-w-[52ch]"
           >
-            i build things that work — and care about why they work. ml pipelines at bain,
-            cv systems at aftershoot, and a few projects i'm genuinely proud of in between.
-            currently pursuing ms cs at northeastern, based in boston.
+            I build things that work - and care about why they work. ML pipelines at bain,
+            CV systems at aftershoot, and a few projects i'm genuinely proud of in between.
+            A recent MS CS graduate from Northeastern, based in boston.
           </motion.p>
 
-          {/* Photo cluster — 4 plain images, no polaroid frames */}
+          {/* Photo cluster - 4 plain images, no polaroid frames */}
           <PhotoCluster />
 
           {/* Beyond my resume */}
@@ -515,13 +503,13 @@ const AboutMe = () => (
             className="mt-4"
           >
             <p className="font-sans text-sm font-semibold text-dark/70 lowercase mb-4">
-              beyond my resume, i also...
+              Beyond my resume, I'm also into..
             </p>
             <div className="flex flex-wrap gap-2.5">
               {[
-                { emoji: "⚽", label: "soccer (barça fan)", bg: "bg-orange-pale text-orange border-orange/20" },
+                { emoji: "⚽", label: "football (barça fan)", bg: "bg-orange-pale text-orange border-orange/20" },
                 { emoji: "🎵", label: "live music",         bg: "bg-purple-pale text-purple border-purple/20" },
-                { emoji: "📸", label: "street photography", bg: "bg-orange-pale text-orange border-orange/20" },
+                { emoji: "📸", label: "photography", bg: "bg-orange-pale text-orange border-orange/20" },
                 { emoji: "🍔", label: "food hunting",       bg: "bg-purple-pale text-purple border-purple/20" },
                 { emoji: "🌆", label: "city exploring",     bg: "bg-orange-pale text-orange border-orange/20" },
               ].map((h) => (
@@ -546,19 +534,19 @@ const AboutMe = () => (
             {[
               {
                 logo: `${BASE}NEU.png`,
-                name: "northeastern university",
-                degree: "ms computer science",
+                name: "Northeastern University",
+                degree: "MS Computer Science",
                 gpa: "4.0 / 4.0",
-                period: "2024 — 2026",
+                period: "2024 - 2026",
                 color: "#d41c2c",
                 border: "border-[#d41c2c]/25",
               },
               {
                 logo: `${BASE}sn-logo.png`,
-                name: "shiv nadar university",
-                degree: "bs computer science",
+                name: "Shiv Nadar University",
+                degree: "BS Computer Science",
                 gpa: "3.5 / 4.0",
-                period: "2020 — 2024",
+                period: "2020 - 2024",
                 color: "#1270b7",
                 border: "border-[#1270b7]/25",
               },
@@ -598,7 +586,7 @@ const AboutMe = () => (
 );
 
 // ─── Snapshot (Bento) ─────────────────────────────────────────────────────────
-// "in a snapshot" — 3-col bento grid: Education (2col), Experience (1col),
+// "in a snapshot" - 3-col bento grid: Education (2col), Experience (1col),
 // Tools & Platforms (2col), Find me on (1col), orange stat tile (full-width).
 
 const Snapshot = () => (
@@ -621,7 +609,7 @@ const Snapshot = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        {/* ── Education — col-span-2 ── */}
+        {/* ── Education - col-span-2 ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -646,7 +634,7 @@ const Snapshot = () => (
                 logo: `${BASE}sn-logo.png`,
                 name: "shiv nadar university",
                 degree: "bs computer science",
-                gpa: "3.5",
+                gpa: "3.8",
                 period: "2020–2024",
                 color: "#1270b7",
               },
@@ -671,7 +659,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Experience summary — col-span-1 ── */}
+        {/* ── Experience summary - col-span-1 ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -686,7 +674,7 @@ const Snapshot = () => (
             {[
               { name: "aftershoot inc.", color: "#006397", emoji: "💻" },
               { name: "bain & company",  color: "#cc0000", emoji: "📊" },
-              { name: "northeastern ta", color: "#d41c2c", emoji: "🎓" },
+              { name: "northeastern TA", color: "#d41c2c", emoji: "🎓" },
             ].map((e) => (
               <div key={e.name} className="flex items-center gap-2.5">
                 <span className="text-base leading-none">{e.emoji}</span>
@@ -698,7 +686,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Tools & Platforms — col-span-2 ── */}
+        {/* ── Tools & Platforms - col-span-2 ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -724,7 +712,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Find me on — col-span-1 ── */}
+        {/* ── Find me on - col-span-1 ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -770,7 +758,7 @@ const Snapshot = () => (
           </div>
         </motion.div>
 
-        {/* ── Orange full-width stat tile — col-span-3 ── */}
+        {/* ── Orange full-width stat tile - col-span-3 ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -783,8 +771,8 @@ const Snapshot = () => (
             { value: "4.0",  label: "gpa" },
             { value: "2",    label: "internships" },
             { value: "1",    label: "co-authored paper" },
-            { value: "5+",   label: "projects shipped" },
-            { value: "300+", label: "students ta'd" },
+            { value: "10+",   label: "projects " },
+            { value: "300+", label: "students taught" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col">
               <span className="font-display font-black text-white text-3xl leading-none">
@@ -811,10 +799,10 @@ const experienceData = [
     company: "Aftershoot Inc.",
     logo: `${BASE}aftershoot-logo.png`,
     companyColor: "#006397",
-    period: "may — jul 2023",
+    period: "may - jul 2023",
     type: "professional" as const,
     description:
-      "high-throughput stripe telemetry pipelines; etl rewrite python → rust (3× faster, 45% less memory); cnn models for blur detection and sharpness scoring; automated ci/cd with docker.",
+      "High-throughput stripe telemetry pipelines; etl rewrite python → rust (3× faster, 45% less memory); cnn models for blur detection and sharpness scoring; automated CI/CD with Docker.",
     tags: ["Rust", "OpenCV", "Docker", "CNN", "Python"],
   },
   {
@@ -823,10 +811,10 @@ const experienceData = [
     company: "Bain & Company",
     logo: `${BASE}bain-logo.png`,
     companyColor: "#cc0000",
-    period: "jan — jul 2024",
+    period: "jan - jul 2024",
     type: "professional" as const,
     description:
-      "ml pipelines for m&a deal screening across 20–75 datasets; k-means + hierarchical clustering cut manual review by 40%; arima + xgboost forecasting improved prioritization by 18%; nlp tagging pipeline.",
+      "ML pipelines for M&A deal screening across 20–75 datasets; k-means + hierarchical clustering cut manual review by 40%; arima + xgboost forecasting improved prioritization by 18%; NLP tagging pipeline.",
     tags: ["Python", "XGBoost", "NLP", "SQLAlchemy", "Pytest"],
   },
   {
@@ -835,10 +823,10 @@ const experienceData = [
     company: "Northeastern University",
     logo: `${BASE}NEU.png`,
     companyColor: "#d41c2c",
-    period: "sept 2025 — may 2026",
+    period: "sept 2025 - may 2026",
     type: "academic" as const,
     description:
-      "ta for cs5800: algorithms — graded 300+ students, held weekly office hours on dynamic programming, graph algorithms, and asymptotic notation; proctored mid-term and final exams.",
+      "TA for CS5800: algorithms - graded 300+ students, held weekly office hours on dynamic programming, graph algorithms, and asymptotic notation; proctored mid-term and final exams.",
     tags: ["Algorithms", "Teaching", "CS5800"],
   },
 ];
@@ -961,25 +949,22 @@ const Experience = () => (
 );
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
-/*
- * Project images: add files to /public/photos/projects/
- *   kambaz.png · regtranslate.png · emotion.png · staffsync.png · concentrainer.png
- */
+
 
 const projectsData = [
   {
-    name: "kambaz",
-    category: "full-stack",
+    name: "Kambaz",
+    category: "Full-Stack",
     accent: "orange" as const,
-    href: "#",
+    href: "https://github.com/shashhwatiwari/kambaz-react-web-app",
     image: `${BASE}photos/projects/kambaz.png`,
     description:
-      "scalable learning management platform built with the mern stack — modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
+      "Scalable learning management platform built with the mern stack - modules, quizzes, and grade tracking, optimized for concurrent user access at scale.",
     tags: ["MongoDB", "Express.js", "React", "Node.js"],
   },
   {
-    name: "regtranslate",
-    category: "ai / rag",
+    name: "RegTranslate",
+    category: "AI / RAG",
     accent: "purple" as const,
     href: "https://regtranslate.vercel.app/",
     image: `${BASE}photos/projects/regtranslate.png`,
@@ -988,33 +973,33 @@ const projectsData = [
     tags: ["Llama 3", "LangChain", "ChromaDB", "FastAPI"],
   },
   {
-    name: "emotion classifier",
+    name: "Emotion Classifier",
     category: "nlp",
     accent: "orange" as const,
     href: "#",
     image: `${BASE}photos/projects/emotion.png`,
     description:
-      "fine-tuned bert on the goemotions dataset for multi-label emotion detection. delivers real-time music recommendations via whatsapp based on inferred user mood.",
+      "Fine-tuned bert on the goemotions dataset for multi-label emotion detection. delivers real-time music recommendations via whatsapp based on inferred user mood.",
     tags: ["BERT", "PyTorch", "WhatsApp API", "FastAPI"],
   },
   {
-    name: "staffsync",
-    category: "full-stack",
+    name: "StaffSync",
+    category: "Full-Stack",
     accent: "purple" as const,
-    href: "#",
+    href: "https://github.com/shashhwatiwari/StaffSync",
     image: `${BASE}photos/projects/staffsync.png`,
     description:
       "workforce scheduling platform with shift management, real-time notifications, and role-based access control. built with react + node.js + postgresql.",
     tags: ["React", "Node.js", "PostgreSQL", "AWS"],
   },
   {
-    name: "concentrainer",
-    category: "ai / cv",
+    name: "ConcenTrainer",
+    category: "AI / HCI",
     accent: "orange" as const,
-    href: "#",
+    href: "https://www.figma.com/proto/fbitb69DpEi3DYhJcIqblL/ConcenTrainer-Iteration?node-id=195-126&p=f&t=ci9GM4EQuiHe0Eg3-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=195%3A126",
     image: `${BASE}photos/projects/concentrainer.png`,
     description:
-      "focus enhancement app using pomodoro-style intervals with real-time engagement scoring — mediapipe-powered posture and attention analysis via webcam.",
+      "Focus enhancement app using pomodoro-style intervals with real-time engagement scoring - mediapipe-powered posture and attention analysis via webcam.",
     tags: ["MediaPipe", "Python", "React", "WebRTC"],
   },
 ];
@@ -1070,7 +1055,7 @@ const Projects = () => (
                 : "md:col-span-2"
             }`}
           >
-            {/* Project image — 180px, object-cover */}
+            {/* Project image - 180px, object-cover */}
             <div className="relative h-[180px] overflow-hidden bg-gray-100">
               <img
                 src={proj.image}
@@ -1148,7 +1133,7 @@ const Projects = () => (
 );
 
 // ─── GitHub Activity ───────────────────────────────────────────────────────────
-// Heatmap only — repo cards removed. CSS filter for purple-tinted heatmap.
+// Heatmap
 
 const GitHubActivity = () => (
   <section className="py-24 px-6">
@@ -1184,13 +1169,13 @@ const GitHubActivity = () => (
 // ─── Skills ───────────────────────────────────────────────────────────────────
 
 const skillCategories = [
-  { name: "languages", emoji: "🧠", accent: "orange" as const, skills: ["Python", "SQL", "TypeScript", "C / C++", "Rust"] },
-  { name: "backend",   emoji: "⚙️",  accent: "purple" as const, skills: ["Node.js", "Express", "FastAPI", "REST APIs"] },
-  { name: "frontend",  emoji: "🎨", accent: "orange" as const, skills: ["React", "Tailwind CSS", "HTML / CSS"] },
-  { name: "ai / ml",   emoji: "🤖", accent: "purple" as const, skills: ["PyTorch", "LangChain", "BERT", "scikit-learn", "OpenCV"] },
-  { name: "cloud",     emoji: "☁️",  accent: "orange" as const, skills: ["AWS Lambda", "Bedrock", "S3"] },
-  { name: "devops",    emoji: "🚀", accent: "purple" as const, skills: ["Docker", "GitHub Actions", "CI / CD"] },
-  { name: "databases", emoji: "🗄️", accent: "orange" as const, skills: ["PostgreSQL", "MongoDB", "ChromaDB", "BigQuery"] },
+  { name: "Languages",  accent: "orange" as const, skills: ["Python", "SQL", "TypeScript", "C / C++", "Rust"] },
+  { name: "Backend",    accent: "purple" as const, skills: ["Node.js", "Express", "FastAPI", "REST APIs"] },
+  { name: "Frontend",   accent: "orange" as const, skills: ["React", "Tailwind CSS", "HTML / CSS"] },
+  { name: "AI / ML",   emoji: "🤖", accent: "purple" as const, skills: ["PyTorch", "LangChain", "BERT", "scikit-learn", "OpenCV"] },
+  { name: "Cloud",     emoji: "☁️",  accent: "orange" as const, skills: ["AWS Lambda", "Bedrock", "S3"] },
+  { name: "DevOps",    emoji: "🚀", accent: "purple" as const, skills: ["Docker", "GitHub Actions", "CI / CD"] },
+  { name: "Databases", emoji: "🗄️", accent: "orange" as const, skills: ["PostgreSQL", "MongoDB", "ChromaDB", "BigQuery"] },
 ];
 
 const Skills = () => (
@@ -1242,8 +1227,8 @@ const Skills = () => (
 // ─── Resume ───────────────────────────────────────────────────────────────────
 /*
  * TODO: Add the following files to /public/
- *   resume-preview.png  — screenshot / exported thumbnail of your resume PDF
- *   resume.pdf          — the actual resume document
+ *   resume-preview.png  - screenshot / exported thumbnail of your resume PDF
+ *   resume.pdf          - the actual resume document
  */
 
 const Resume = () => (
@@ -1284,7 +1269,7 @@ const Resume = () => (
           className="flex flex-col justify-center gap-5"
         >
           <p className="font-sans text-lg text-dark/65 leading-relaxed max-w-[48ch]">
-            one page. everything you need to know — experience, education, projects, and skills.
+            one page. everything you need to know - experience, education, projects, and skills.
           </p>
           <a
             href={`${BASE}resume.pdf`}
@@ -1325,7 +1310,7 @@ const Contact = () => (
         </h2>
         <p className="font-sans text-white/45 leading-relaxed mb-12 text-lg max-w-[48ch]">
           i'm actively looking for full-time roles from summer 2026.
-          if you're building something interesting — i'd genuinely like to hear it.
+          if you're building something interesting or just want to connect - i'd always be interested.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <a
@@ -1358,11 +1343,11 @@ const Footer = () => (
       <div>
         <span className="font-display font-black text-sm text-dark lowercase">shashwat tiwari</span>
         <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-dark/30 mt-1">
-          © 2025 — built with react & tailwind
+          © 2025 - built with react & tailwind
         </p>
       </div>
 
-      {/* Social icons — 32px with text labels */}
+      {/* Social icons - 32px with text labels */}
       <div className="flex items-center gap-8">
         {[
           {
