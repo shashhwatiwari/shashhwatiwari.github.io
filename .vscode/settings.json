@@ -1,0 +1,6 @@
+{
+  "// note": "Tailwind v4 uses at-rules (@theme, @apply, @layer) the built-in CSS linter doesn't know. These are valid and compiled by Vite/Tailwind.",
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore"
+}
