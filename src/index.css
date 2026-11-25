@@ -10,17 +10,17 @@
   --font-display: "Clash Display", "Space Grotesk", "General Sans", sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* ─ Brand colors ─ warm editorial light theme, orange + purple accents ───── */
+  /* ─ Brand colors ─ neutral light theme, orange + purple accents ─────────── */
   --color-ink:          #1A1A22;   /* primary text */
-  --color-ink-soft:     #57564C;   /* muted warm gray */
-  --color-line:         #E4DECF;   /* hairline borders on cream */
+  --color-ink-soft:     #55555F;   /* muted neutral gray */
+  --color-line:         #E3E3E8;   /* hairline borders */
 
-  --color-paper:        #F5F1E8;   /* main warm cream background */
-  --color-paper-2:      #EDE7D9;   /* deeper cream for alternating bands */
-  --color-card:         #FFFFFF;   /* light cards */
+  --color-paper:        #FFFFFF;   /* main background */
+  --color-paper-2:      #F4F4F6;   /* cool light gray for alternating bands */
+  --color-card:         #FFFFFF;
 
-  --color-dark:         #16151C;   /* dark feature cards / contact */
-  --color-cream:        #ECE7DA;   /* text on dark surfaces */
+  --color-dark:         #16151C;   /* contact / footer */
+  --color-cream:        #F2F2F5;   /* text on dark surfaces (neutral, not cream) */
 
   --color-orange:       #FF6B35;
   --color-orange-light: #FFB69E;
@@ -43,7 +43,7 @@
   }
   ::-webkit-scrollbar             { width: 6px; }
   ::-webkit-scrollbar-track       { background: transparent; }
-  ::-webkit-scrollbar-thumb       { background: #C9C0AC; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb       { background: #C4C4CC; border-radius: 999px; }
   ::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
 }
 
@@ -52,23 +52,9 @@
   .font-display { font-family: "Clash Display", "Space Grotesk", sans-serif; }
   .tracking-tightest { letter-spacing: -0.04em; }
 
-  /* Soft ambient glow behind the hero (light-theme translation of the
-     reference's dark spotlights) */
-  .hero-glow::before {
-    content: "";
-    position: absolute;
-    inset: -10% -5% 0 -5%;
-    background:
-      radial-gradient(45% 40% at 18% 28%, rgba(255, 107, 53, 0.10), transparent 62%),
-      radial-gradient(42% 42% at 84% 62%, rgba(124, 92, 191, 0.12), transparent 62%),
-      radial-gradient(60% 45% at 50% 100%, rgba(255, 182, 158, 0.10), transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
   /* Glass nav */
   .glass-nav {
-    background: rgba(245, 241, 232, 0.82);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px) saturate(1.4);
     -webkit-backdrop-filter: blur(20px) saturate(1.4);
   }
