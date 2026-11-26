@@ -8,7 +8,7 @@
  */
 
 import { motion, useSpring, useMotionValue } from "motion/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { Github, Mail, Link as LinkIcon } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL;
@@ -375,7 +375,7 @@ const experienceData = [
     year: "2026–",
     role: "Data Analyst",
     company: "1Password",
-    logo: "",
+    logo: `${BASE}1password-logo.png`,
     companyColor: "#0572EC",
     period: "Sept 2026 – Present",
     type: "professional" as const,
@@ -409,67 +409,110 @@ const experienceData = [
   },
 ];
 
-const Experience = () => (
-  <section id="experience" className="py-28 md:py-36 px-6">
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-16">
-        <h2 className="font-display font-semibold text-ink leading-[0.9] tracking-tightest uppercase" style={{ fontSize: "clamp(2.6rem, 9vw, 7rem)" }}>
-          Experience
-        </h2>
-      </div>
+const Experience = () => {
+  // Oldest on the left, newest on the right.
+  const items = [...experienceData].reverse();
+  const [active, setActive] = useState<number | null>(null);
 
-      <div className="flex flex-col">
-        {experienceData.map((exp) => (
-          <div
-            key={exp.year}
-            className="group grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 md:gap-10 py-9 border-t border-line first:border-t-0 md:first:border-t"
-          >
-            <div className="flex items-center gap-3 md:flex-col md:items-start md:gap-4">
-              <span className="font-mono text-sm font-medium" style={{ color: exp.companyColor }}>{exp.year}</span>
-              <span
-                className={`text-[10px] font-sans font-semibold tracking-[0.14em] uppercase px-2.5 py-1 rounded-full ${
-                  exp.type === "academic" ? "bg-purple-pale text-purple" : "bg-orange-pale text-orange"
-                }`}
+  return (
+    <section id="experience" className="py-28 md:py-36 px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-14 md:mb-20">
+          <h2 className="font-display font-semibold text-ink leading-[0.9] tracking-tightest uppercase" style={{ fontSize: "clamp(2.6rem, 9vw, 7rem)" }}>
+            Experience
+          </h2>
+          <p className="mt-5 font-sans text-lg text-ink/60 max-w-xl leading-relaxed">
+            <span className="text-ink font-semibold">1+ year</span> of industry experience across analytics, experimentation and engineering.
+          </p>
+        </div>
+
+        <ol
+          className="relative flex flex-col md:flex-row"
+          onMouseLeave={() => setActive(null)}
+        >
+          {/* Timeline axis: vertical on mobile, horizontal from md up */}
+          <span aria-hidden className="absolute bg-line left-[7px] top-2 bottom-2 w-px md:left-0 md:right-0 md:top-[7px] md:bottom-auto md:w-auto md:h-px" />
+
+          {items.map((exp, i) => {
+            const isActive = active === i;
+            const dimmed = active !== null && !isActive;
+            return (
+              <li
+                key={exp.year}
+                className="relative pl-9 pb-10 md:pl-0 md:pb-0 md:pt-10 md:pr-8 last:pb-0 md:last:pr-0 transition-[flex-grow,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{ flexGrow: isActive ? 2.6 : 1, flexBasis: 0, opacity: dimmed ? 0.45 : 1 }}
+                onMouseEnter={() => setActive(i)}
               >
-                {exp.type === "academic" ? "Academic" : "Industry"}
-              </span>
-            </div>
+                {/* Node */}
+                <span
+                  aria-hidden
+                  className={`absolute left-0 top-1 md:top-0 w-[15px] h-[15px] rounded-full border-2 transition-all duration-300 ${
+                    isActive ? "bg-orange border-orange scale-125" : "bg-paper border-ink/30"
+                  }`}
+                />
 
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                {exp.logo ? (
-                  <img src={exp.logo} alt={exp.company} className="h-7 object-contain" referrerPolicy="no-referrer" />
-                ) : (
-                  <span className="font-display font-semibold text-xl tracking-tight" style={{ color: exp.companyColor }}>{exp.company}</span>
-                )}
-              </div>
-              <h3 className="font-display font-semibold text-2xl md:text-3xl text-ink leading-tight group-hover:text-orange transition-colors">
-                {exp.role}
-              </h3>
-              <p className="font-sans text-sm font-semibold mt-1 mb-1" style={{ color: exp.companyColor }}>
-                {exp.company}<span className="text-ink/35 font-normal">, {exp.period}</span>
-              </p>
-              <p className="font-sans text-[15px] text-ink/65 leading-relaxed mt-3 max-w-3xl">{exp.description}</p>
-              <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-4">
-                {exp.tags.map((t) => (
-                  <span key={t} className="font-sans text-[11px] font-semibold tracking-[0.12em] uppercase text-ink/45">
-                    {t}
+                <button
+                  type="button"
+                  onClick={() => setActive(i)}
+                  aria-expanded={isActive}
+                  className="text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 rounded-md"
+                >
+                  <span className="block font-mono text-xs font-medium" style={{ color: exp.companyColor }}>
+                    {exp.period}
                   </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
+                  <span
+                    className={`block mt-2 font-display font-semibold leading-tight transition-all duration-300 ${
+                      isActive ? "text-2xl md:text-3xl text-ink" : "text-lg text-ink/80"
+                    }`}
+                  >
+                    {exp.role}
+                  </span>
+                  <span className="flex items-center gap-2 mt-1 font-sans text-sm font-semibold" style={{ color: exp.companyColor }}>
+                    {exp.logo && (
+                      <img src={exp.logo} alt="" className="w-5 h-5 object-contain shrink-0" referrerPolicy="no-referrer" />
+                    )}
+                    {exp.company}
+                  </span>
+                </button>
+
+                {/* Details: collapsed to zero height unless active */}
+                <div
+                  className={`grid transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                    isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pt-4 font-sans text-[15px] text-ink/65 leading-relaxed max-w-[60ch]">
+                      {exp.description}
+                    </p>
+                    <p className="mt-4 font-sans text-[11px] font-semibold tracking-[0.12em] uppercase text-ink/45">
+                      {exp.tags.join(", ")}
+                    </p>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
+
+const DOMAINS = [
+  { id: "ai", label: "AI & LLMs" },
+  { id: "ml", label: "Machine Learning" },
+  { id: "web", label: "Full-Stack" },
+  { id: "ios", label: "iOS" },
+] as const;
+type DomainId = (typeof DOMAINS)[number]["id"];
 
 const projectsData = [
   {
     name: "RegTranslate",
+    domains: ["ai","web"] as DomainId[],
     category: "AI / RAG",
     href: "https://regtranslate.vercel.app/",
     repo: "https://github.com/shashhwatiwari/regtranslate",
@@ -480,6 +523,7 @@ const projectsData = [
   },
   {
     name: "iSearch4u",
+    domains: ["ai"] as DomainId[],
     category: "AI / Agents",
     href: "",
     repo: "https://github.com/shashhwatiwari/iSearch4u",
@@ -490,6 +534,7 @@ const projectsData = [
   },
   {
     name: "Commute Assistant",
+    domains: ["ios"] as DomainId[],
     category: "iOS",
     href: "",
     repo: "https://github.com/shashhwatiwari/MBTAonGo",
@@ -500,6 +545,7 @@ const projectsData = [
   },
   {
     name: "World Cup Forecaster",
+    domains: ["ml"] as DomainId[],
     category: "Sports Analytics",
     href: "",
     repo: "",
@@ -510,6 +556,7 @@ const projectsData = [
   },
   {
     name: "Emotion Classifier",
+    domains: ["ml"] as DomainId[],
     category: "NLP",
     href: "",
     repo: "https://github.com/shashhwatiwari/MultiLabel-Emotion-Classification",
@@ -520,6 +567,7 @@ const projectsData = [
   },
   {
     name: "StaffSync",
+    domains: ["web"] as DomainId[],
     category: "Full-Stack",
     href: "",
     repo: "https://github.com/shashhwatiwari/StaffSync",
@@ -530,6 +578,7 @@ const projectsData = [
   },
   {
     name: "Kambaz",
+    domains: ["web"] as DomainId[],
     category: "Full-Stack",
     href: "",
     repo: "https://github.com/shashhwatiwari/kambaz-react-web-app",
@@ -540,6 +589,7 @@ const projectsData = [
   },
   {
     name: "ConcenTrainer",
+    domains: ["ml"] as DomainId[],
     category: "AI / CV",
     href: "",
     repo: "https://github.com/shashhwatiwari",
@@ -550,82 +600,166 @@ const projectsData = [
   },
 ];
 
-const Projects = () => (
-  <section id="projects" className="py-28 md:py-36 px-6 bg-paper-2 border-y border-line">
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-16 md:mb-20">
-        <h2 className="font-display font-semibold text-ink leading-[0.86] tracking-tightest uppercase" style={{ fontSize: "clamp(3rem, 12vw, 9rem)" }}>
-          Projects
-        </h2>
-        <p className="mt-5 font-sans text-lg text-ink/60 max-w-xl leading-relaxed">
-          Things I've built on my own time, from RAG agents to iOS apps and sports forecasting.
-        </p>
-      </div>
+// Cinematic carousel: a strip that never stops sliding, clipped into a curved
+// "cinema screen" shape. The ends are tall; the top edge dips (U) and the bottom
+// edge rises (∩) toward the centre, so the middle is the narrowest point.
+const ProjectCarousel = ({ onPick }: { onPick: (name: string) => void }) => (
+  <div className="relative">
+    <svg width="0" height="0" className="absolute" aria-hidden>
+      <defs>
+        <clipPath id="cinema-curve" clipPathUnits="objectBoundingBox">
+          <path d="M0,0 Q0.5,0.26 1,0 L1,1 Q0.5,0.74 0,1 Z" />
+        </clipPath>
+      </defs>
+    </svg>
 
-      <div className="flex flex-col">
-        {projectsData.map((proj, i) => {
-          const flip = i % 2 === 1;
-          return (
-            <div
-              key={proj.name}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center py-12 border-t border-line first:border-t-0 first:pt-0"
+    <div className="overflow-hidden" style={{ clipPath: "url(#cinema-curve)" }}>
+      <div className="marquee-track marquee-track--slow">
+        {[...projectsData, ...projectsData].map((proj, i) => (
+          <div key={`${proj.name}-${i}`} className="shrink-0 pr-4 md:pr-5" aria-hidden={i >= projectsData.length}>
+            <button
+              type="button"
+              tabIndex={i >= projectsData.length ? -1 : 0}
+              onClick={() => onPick(proj.name)}
+              className="group relative flex flex-col items-center justify-center gap-2 w-[200px] h-[220px] md:w-[280px] md:h-[300px] px-6 bg-dark text-center transition-colors hover:bg-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-orange"
             >
-              {/* Copy */}
-              <div className={flip ? "md:order-2" : ""}>
-                <h3 className="font-display font-semibold text-3xl md:text-4xl text-ink leading-tight mb-4">{proj.name}</h3>
-                <p className="font-sans text-[15px] text-ink/65 leading-relaxed mb-6 max-w-md">{proj.description}</p>
-                <p className="font-sans text-sm text-ink/45">
-                  {proj.category}. Built with {proj.tags.join(", ")}.
-                </p>
-                {(proj.repo || proj.href) && (
-                  <div className="flex items-center gap-6 mt-6">
-                    {proj.href && (
-                      <a href={proj.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-orange hover:text-ink transition-colors">
-                        <LinkIcon className="w-4 h-4" /> Live site
-                      </a>
-                    )}
-                    {proj.repo && (
-                      <a href={proj.repo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink/70 hover:text-orange transition-colors">
-                        <GitHubIcon size={16} /> Source code
-                      </a>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Screenshot */}
-              <div className={flip ? "md:order-1" : ""}>
-                {proj.image ? (
-                  <img
-                    src={proj.image}
-                    alt={proj.name}
-                    className="w-full aspect-[16/10] object-cover object-top rounded-2xl ring-1 ring-black/10 bg-dark"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full aspect-[16/10] rounded-2xl bg-dark flex items-center justify-center">
-                    <span className="font-display font-semibold text-3xl md:text-4xl text-cream tracking-tight">{proj.name}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="mt-12">
-        <a
-          href="https://github.com/shashhwatiwari"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink/70 hover:text-orange transition-colors"
-        >
-          <Github className="w-4 h-4" /> More on GitHub
-        </a>
+              <span className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.14em] text-orange-light">{proj.category}</span>
+              <span className="font-display font-semibold text-2xl md:text-3xl text-cream tracking-tight leading-tight transition-colors group-hover:text-orange">
+                {proj.name}
+              </span>
+            </button>
+          </div>
+        ))}
       </div>
     </div>
-  </section>
+  </div>
 );
+
+const ProjectRow = ({ proj, flip }: { proj: (typeof projectsData)[number]; flip: boolean }) => (
+  <div
+    id={`project-${proj.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+    className="scroll-mt-28 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center py-12 border-t border-line first:border-t-0 first:pt-0"
+  >
+    <div className={flip ? "md:order-2" : ""}>
+      <h3 className="font-display font-semibold text-3xl md:text-4xl text-ink leading-tight mb-4">{proj.name}</h3>
+      <p className="font-sans text-[15px] text-ink/65 leading-relaxed mb-6 max-w-md">{proj.description}</p>
+      <p className="font-sans text-sm text-ink/45">
+        {proj.category}. Built with {proj.tags.join(", ")}.
+      </p>
+      {(proj.repo || proj.href) && (
+        <div className="flex items-center gap-6 mt-6">
+          {proj.href && (
+            <a href={proj.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-orange hover:text-ink transition-colors">
+              <LinkIcon className="w-4 h-4" /> Live site
+            </a>
+          )}
+          {proj.repo && (
+            <a href={proj.repo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink/70 hover:text-orange transition-colors">
+              <GitHubIcon size={16} /> Source code
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+
+    <div className={flip ? "md:order-1" : ""}>
+      {proj.image ? (
+        <img
+          src={proj.image}
+          alt={proj.name}
+          className="w-full aspect-[16/10] object-cover object-top rounded-2xl ring-1 ring-black/10 bg-dark"
+          loading="lazy"
+        />
+      ) : (
+        <div className="w-full aspect-[16/10] rounded-2xl bg-dark flex items-center justify-center">
+          <span className="font-display font-semibold text-3xl md:text-4xl text-cream tracking-tight">{proj.name}</span>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
+const Projects = () => {
+  const [tab, setTab] = useState<DomainId>(DOMAINS[0].id);
+  const visible = projectsData.filter((p) => p.domains.includes(tab));
+
+  // Clicking a carousel card opens that project's domain tab and scrolls to it.
+  const pick = (name: string) => {
+    const proj = projectsData.find((p) => p.name === name);
+    if (!proj) return;
+    if (!proj.domains.includes(tab)) setTab(proj.domains[0]);
+    const id = `project-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })),
+    );
+  };
+
+  return (
+    <section id="projects" className="py-28 md:py-36 bg-paper-2 border-y border-line">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="mb-14 md:mb-16">
+          <h2 className="font-display font-semibold text-ink leading-[0.86] tracking-tightest uppercase" style={{ fontSize: "clamp(3rem, 12vw, 9rem)" }}>
+            Projects
+          </h2>
+          <p className="mt-5 font-sans text-lg text-ink/60 max-w-xl leading-relaxed">
+            Things I've built on my own time, from RAG agents to iOS apps and sports forecasting.
+          </p>
+        </div>
+      </div>
+
+      <ProjectCarousel onPick={pick} />
+
+      <div className="max-w-6xl mx-auto px-6 mt-20 md:mt-24">
+        <div role="tablist" aria-label="Project domains" className="flex flex-wrap gap-2 mb-12">
+          {DOMAINS.map((d) => {
+            const count = projectsData.filter((p) => p.domains.includes(d.id)).length;
+            const on = d.id === tab;
+            return (
+              <button
+                key={d.id}
+                role="tab"
+                aria-selected={on}
+                aria-controls="project-panel"
+                onClick={() => setTab(d.id)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-sans text-sm font-semibold border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 ${
+                  on ? "bg-ink text-paper border-ink" : "bg-transparent text-ink/70 border-ink/15 hover:border-ink/40 hover:text-ink"
+                }`}
+              >
+                {d.label}
+                <span className={`font-mono text-[11px] ${on ? "text-orange-light" : "text-ink/40"}`}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <motion.div
+          key={tab}
+          id="project-panel"
+          role="tabpanel"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col"
+        >
+          {visible.map((proj, i) => (
+            <Fragment key={proj.name}><ProjectRow proj={proj} flip={i % 2 === 1} /></Fragment>
+          ))}
+        </motion.div>
+
+        <div className="mt-12">
+          <a
+            href="https://github.com/shashhwatiwari"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink/70 hover:text-orange transition-colors"
+          >
+            <Github className="w-4 h-4" /> More on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 // ─── GitHub Activity ───────────────────────────────────────────────────────────
 
