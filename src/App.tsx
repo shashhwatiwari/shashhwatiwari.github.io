@@ -246,14 +246,27 @@ const HeroName = ({ start }: { start: boolean }) => {
         const s = letters.current[i];
         return s ? s.offsetLeft + s.offsetWidth / 2 : 0;
       };
+      // Centre over the i's ink, not its box: the box includes side bearings
+      // and the tight negative letter-spacing, which pull it off-centre.
+      // Positions are summed from glyph advances (each letter is its own box,
+      // so there is no kerning between them) to stay sub-pixel exact;
+      // offsetLeft rounds to whole pixels.
+      const off = FIRST.length;
+      const iM = m("i");
+      const ls = parseFloat(cs.letterSpacing) || 0;
+      const lineStart = letters.current[off]?.offsetLeft ?? 0;
+      const inkCenter = (i: number) => {
+        let x = lineStart;
+        for (let j = 0; j < i - off; j++) x += m(LAST[j]).width + ls;
+        return x + (iM.actualBoundingBoxRight - iM.actualBoundingBoxLeft) / 2;
+      };
       const dotY = base - iAsc + d / 2;
       // Letter indexes in LAST: 1 = first ı, 2-4 = w a r, 5 = last ı
-      const off = FIRST.length;
       setGeo({
         em: size,
         dots: [
-          { cx: center(off + 1), cy: dotY, d },
-          { cx: center(off + 5), cy: dotY, d },
+          { cx: inkCenter(off + 1), cy: dotY, d },
+          { cx: inkCenter(off + 5), cy: dotY, d },
         ],
         last: LAST.map((ch, k) => {
           const sp = letters.current[off + k];
