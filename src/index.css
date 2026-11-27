@@ -1,33 +1,39 @@
 /* ── Fonts ────────────────────────────────────────────────────────────────── */
-/* Clash Display (heavy editorial grotesk) for display, General Sans for body. */
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@400,500,600,700&display=swap');
+/* SF Pro on Apple devices via the system stack, Inter everywhere else. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
   /* ─ Font stacks ─────────────────────────────────────────────────────────── */
-  --font-sans:    "General Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Clash Display", "Space Grotesk", "General Sans", sans-serif;
+  --font-sans:    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* ─ Motion ─ damped, spring-like easing used by every transition ─────────── */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: 400ms;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* ─ Brand colors ─ neutral light theme, orange + purple accents ─────────── */
-  --color-ink:          #1A1A22;   /* primary text */
-  --color-ink-soft:     #55555F;   /* muted neutral gray */
-  --color-line:         #E3E3E8;   /* hairline borders */
+  /* ─ Brand colors ─ cool near-white base, ocean blue + magenta accent ──── */
+  --color-ink:          #0F1B24;   /* primary text (deep blue-black) */
+  --color-ink-soft:     #5E6B75;   /* muted secondary text */
+  --color-line:         rgba(5, 40, 60, 0.08);   /* hairline borders */
 
-  --color-paper:        #FFFFFF;   /* main background */
-  --color-paper-2:      #F4F4F6;   /* cool light gray for alternating bands */
+  --color-paper:        #FCFFFF;   /* main background */
+  --color-paper-2:      rgba(255, 255, 255, 0.35);   /* translucent band so the ambient light shows through */
   --color-card:         #FFFFFF;
 
-  --color-dark:         #16151C;   /* contact / footer */
-  --color-cream:        #F2F2F5;   /* text on dark surfaces (neutral, not cream) */
+  --color-dark:         #0B1820;   /* contact / footer */
+  --color-cream:        #EEF7FA;   /* text on dark surfaces */
 
-  --color-orange:       #FF6B35;
-  --color-orange-light: #FFB69E;
-  --color-orange-pale:  #FFEEE6;
-  --color-purple:       #7C5CBF;
-  --color-purple-light: #A78FDB;
-  --color-purple-pale:  #EEE9F8;
+  --color-brand:        #0593C6;   /* primary blue */
+  --color-brand-light:  #6CC4E4;
+  --color-brand-pale:   #E3F4FA;
+
+  --color-accent:       #D83995;   /* magenta accent */
+  --color-accent-light: #F08DC4;
+  --color-accent-pale:  #FBE6F1;
 }
 
 @layer base {
@@ -36,48 +42,181 @@
   }
   body {
     @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    letter-spacing: -0.01em;
   }
   ::selection {
-    background: rgba(255, 107, 53, 0.20);
-    color: #C43E12;
+    background: rgba(216, 57, 149, 0.18);
+    color: #A3236E;
+  }
+  /* Native custom cursor: drawn by the OS, so it has zero lag. A crisp ink
+     arrow with a white outline; it turns magenta over anything clickable. */
+  @media (pointer: fine) {
+    html { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 2.5 L4.5 19 L9 14.9 L11.9 21.2 L14.6 20 L11.8 13.8 L17.8 13.8 Z' fill='%230F1B24' stroke='white' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 4 2, auto; }
+    a, button, [role="button"], summary, label[for], select {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 2.5 L4.5 19 L9 14.9 L11.9 21.2 L14.6 20 L11.8 13.8 L17.8 13.8 Z' fill='%23D83995' stroke='white' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 4 2, pointer;
+    }
   }
   ::-webkit-scrollbar             { width: 6px; }
   ::-webkit-scrollbar-track       { background: transparent; }
-  ::-webkit-scrollbar-thumb       { background: #C4C4CC; border-radius: 999px; }
-  ::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
+  ::-webkit-scrollbar-thumb       { background: #B7C6CE; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #0593C6; }
 }
 
 @layer utilities {
   /* Editorial display helper — tight tracking, heavy */
-  .font-display { font-family: "Clash Display", "Space Grotesk", sans-serif; }
-  .tracking-tightest { letter-spacing: -0.04em; }
+  .tracking-tightest { letter-spacing: -0.03em; }
 
-  /* Glass nav */
+  /* ── Frosted glass ──────────────────────────────────────────────────────────
+     Translucent fill, 24px blur, a crisp 1px edge and a specular highlight
+     along the top edge. .glass for light surfaces, .glass-dark for dark ones. */
+  .glass,
   .glass-nav {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    background: rgba(255, 255, 255, 0.56);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 0 0 0.5px rgba(0, 0, 0, 0.06),
+      0 10px 40px -16px rgba(5, 60, 90, 0.22);
+  }
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.72);
+  }
+  .glass-dark {
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 10px 40px -16px rgba(0, 0, 0, 0.5);
   }
 
-  /* When the custom cursor is active, hide the native one everywhere */
-  html.cursor-hidden,
-  html.cursor-hidden * {
-    cursor: none !important;
+  /* Nav over dark sections: the pill turns to dark glass with light text. */
+  .nav-dark .nav-pill {
+    background: rgba(11, 24, 32, 0.55);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 10px 40px -16px rgba(0, 0, 0, 0.6);
   }
+  .nav-dark .nav-pill a:not([data-active]):not(.bg-ink) { color: rgba(238, 247, 250, 0.72); }
+  .nav-dark .nav-pill a:not([data-active]):not(.bg-ink):hover { color: #FFFFFF; }
+  .nav-dark .nav-pill .bg-ink { background: #FFFFFF; color: #0F1B24; }
+  .nav-dark .nav-pill button span { background: #EEF7FA; }
+  .nav-dark .nav-pill .bg-line { background: rgba(255, 255, 255, 0.18); }
 
-  /* Custom trailing cursor (desktop, fine-pointer only) */
-  .cursor-dot {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 14px;
-    height: 14px;
-    margin: -7px 0 0 -7px;
-    border-radius: 9999px;
-    background: #FF6B35;
+  /* Hover line: a pink stroke draws along the top edge (left to right) and
+     up the right edge (bottom to top), meeting at the top-right corner.
+     On mouse-out it fades away in place instead of retracting. */
+  .hover-line {
+    position: relative;
+    isolation: isolate;
+  }
+  .hover-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
     pointer-events: none;
-    z-index: 9999;
-    mix-blend-mode: multiply;
+    border-radius: inherit;
+    border: 2px solid transparent;
+    border-top-color: var(--color-accent);
+    border-right-color: var(--color-accent);
+    -webkit-mask:
+      linear-gradient(#000, #000) top left / 0% 50% no-repeat,
+      linear-gradient(#000, #000) bottom right / 50% 0% no-repeat;
+            mask:
+      linear-gradient(#000, #000) top left / 0% 50% no-repeat,
+      linear-gradient(#000, #000) bottom right / 50% 0% no-repeat;
+    opacity: 0;
+    /* leaving: fade out slowly, then reset the stroke once invisible */
+    transition:
+      opacity 1000ms ease-out,
+      -webkit-mask-size 0s linear 1000ms,
+      mask-size 0s linear 1000ms;
+  }
+  .hover-line:hover::after,
+  .hover-line:focus-visible::after {
+    opacity: 1;
+    -webkit-mask-size: 100% 50%, 50% 100%;
+            mask-size: 100% 50%, 50% 100%;
+    /* entering: both strokes draw toward the top-right corner together */
+    transition:
+      opacity 0s,
+      -webkit-mask-size 1000ms var(--ease-spring),
+      mask-size 1000ms var(--ease-spring);
+  }
+
+  /* On bordered surfaces the stroke sits on the 1px edge itself, not inside it. */
+  .hover-line.glass::after,
+  .hover-line.glass-dark::after,
+  .hover-line.border::after {
+    inset: -1px;
+  }
+
+  /* Selected project tab: the same ink shade, as tinted frosted glass. */
+  .tab-on {
+    background: rgba(15, 27, 36, 0.78);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+      0 12px 32px -12px rgba(5, 30, 45, 0.55);
+  }
+
+  /* On pink buttons the stroke is white so it stays visible. */
+  .hover-line.bg-accent::after {
+    border-top-color: #FFFFFF;
+    border-right-color: #FFFFFF;
+  }
+
+  /* Gentle lift on hover for glass cards. */
+  .lift {
+    transition: transform 500ms var(--ease-spring), box-shadow 500ms var(--ease-spring), background-color 500ms var(--ease-spring);
+  }
+  .lift:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 0 0 0.5px rgba(0, 0, 0, 0.06),
+      0 22px 50px -18px rgba(5, 60, 90, 0.3);
+  }
+
+  /* Ambient light behind everything: soft colour fields the glass diffuses. */
+  .ambient {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(48vmax 48vmax at 8% 6%, rgba(5, 147, 198, 0.26), transparent 70%),
+      radial-gradient(44vmax 44vmax at 94% 20%, rgba(216, 57, 149, 0.20), transparent 70%),
+      radial-gradient(42vmax 42vmax at 72% 94%, rgba(5, 147, 198, 0.18), transparent 70%),
+      radial-gradient(34vmax 34vmax at 4% 80%, rgba(216, 57, 149, 0.14), transparent 70%),
+      #FCFFFF;
+  }
+
+  /* Carousel tile hover stroke (drawn over the curved frame). */
+  @keyframes stroke-draw {
+    from { stroke-dashoffset: 1; }
+    to   { stroke-dashoffset: 0; }
+  }
+  .tile-stroke {
+    transition: opacity 1000ms ease-out;
+  }
+  .tile-stroke polyline,
+  .tile-stroke line {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    animation: stroke-draw 1000ms var(--ease-spring) both;
   }
 
   /* Horizontal auto-scrolling photo slideshow */
@@ -96,5 +235,8 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .marquee-track { animation: none; }
+    .tile-stroke polyline, .tile-stroke line { animation: none; stroke-dashoffset: 0; }
+    .hover-line::after { transition: opacity 300ms; -webkit-mask: none; mask: none; }
+    .lift:hover { transform: none; }
   }
 }

@@ -7,8 +7,8 @@
  * Fonts: Clash Display (display) + General Sans (body).
  */
 
-import { motion, animate, useSpring, useMotionValue, useReducedMotion } from "motion/react";
-import { useState, useEffect, Fragment } from "react";
+import { motion, animate, useMotionValue, useReducedMotion, useTransform } from "motion/react";
+import { useState, useEffect, useRef, Fragment, type MouseEvent as ReactMouseEvent } from "react";
 import { Github, Mail, Link as LinkIcon } from "lucide-react";
 
 const BASE = import.meta.env.BASE_URL;
@@ -39,44 +39,6 @@ const SOCIALS = [
   { href: "https://leetcode.com/u/shashwat__/",              icon: LeetCodeIcon, label: "LeetCode" },
 ];
 
-// ─── Custom cursor (desktop, fine-pointer only) ────────────────────────────────
-
-const CursorDot = () => {
-  const [enabled, setEnabled] = useState(false);
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
-  const sx = useSpring(x, { stiffness: 500, damping: 40, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 500, damping: 40, mass: 0.4 });
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    if (!window.matchMedia("(pointer: fine)").matches) return;
-    setEnabled(true);
-    document.documentElement.classList.add("cursor-hidden");
-    const move = (e: MouseEvent) => {
-      x.set(e.clientX);
-      y.set(e.clientY);
-      const t = e.target as HTMLElement | null;
-      setScale(t && t.closest("a, button") ? 2.6 : 1);
-    };
-    window.addEventListener("mousemove", move);
-    return () => {
-      window.removeEventListener("mousemove", move);
-      document.documentElement.classList.remove("cursor-hidden");
-    };
-  }, [x, y]);
-
-  if (!enabled) return null;
-  return (
-    <motion.div
-      className="cursor-dot hidden md:block"
-      style={{ x: sx, y: sy }}
-      animate={{ scale }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-    />
-  );
-};
-
 // ─── Photo Cluster ────────────────────────────────────────────────────────────
 
 const marqueePhotos = [
@@ -101,7 +63,7 @@ const PhotoMarquee = () => (
       {[...marqueePhotos, ...marqueePhotos].map((file, i) => (
         <div
           key={`${file}-${i}`}
-          className="shrink-0 w-[280px] h-[200px] md:w-[340px] md:h-[240px] rounded-2xl overflow-hidden ring-1 ring-black/5 shadow-lg"
+          className="shrink-0 w-[280px] h-[200px] md:w-[340px] md:h-[240px] rounded-[24px] overflow-hidden ring-1 ring-white/60 shadow-[0_18px_40px_-18px_rgba(30,24,60,0.35)]"
         >
           <img
             src={`${BASE}${file}`}
@@ -121,10 +83,14 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [onDark, setOnDark] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 24);
+      // Switch the nav to dark glass while it floats over the dark contact/footer area.
+      const contact = document.getElementById("contact");
+      setOnDark(!!contact && contact.getBoundingClientRect().top <= 44);
       const ids = ["about", "experience", "projects", "resume", "contact"];
       const current = ids.find((id) => {
         const el = document.getElementById(id);
@@ -146,10 +112,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "glass-nav border-b border-line" : "bg-transparent"}`}>
-      <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
-        <a href="#" className="font-display font-semibold text-lg text-ink tracking-tight hover:text-orange transition-colors">
-          Shashwat<span className="text-orange">.</span>
+    <nav className={`fixed top-0 inset-x-0 z-50 px-4 pt-4 ${onDark ? "nav-dark" : ""}`}>
+      <div className={`nav-pill max-w-6xl mx-auto pl-6 pr-3 h-14 flex items-center justify-between rounded-full glass transition-all duration-500 ${scrolled ? "glass-strong" : ""}`}>
+        <a href="#" className="font-display font-semibold text-lg text-ink tracking-tight hover:text-accent transition-colors">
+          Shashwat<span className="text-accent">.</span>
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -157,8 +123,9 @@ const Navbar = () => {
             <a
               key={l.href}
               href={l.href}
-              className={`font-sans text-[12px] font-medium tracking-[0.16em] uppercase transition-colors ${
-                active === l.href.slice(1) ? "text-orange" : "text-ink/55 hover:text-ink"
+              data-active={active === l.href.slice(1) || undefined}
+              className={`font-sans text-[13px] font-medium transition-colors ${
+                active === l.href.slice(1) ? "text-accent" : "text-ink/55 hover:text-ink"
               }`}
             >
               {l.label}
@@ -166,7 +133,7 @@ const Navbar = () => {
           ))}
           <span className="h-4 w-px bg-line" />
           {SOCIALS.map((s) => (
-            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-ink/40 hover:text-orange transition-colors">
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-ink/40 hover:text-accent transition-colors">
               <s.icon size={19} />
             </a>
           ))}
@@ -174,14 +141,14 @@ const Navbar = () => {
             href={`${BASE}resume.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-sans text-[12px] font-semibold tracking-[0.16em] uppercase px-4 py-2 rounded-full border border-ink/25 text-ink hover:border-orange hover:text-orange transition-colors"
+            className="hover-line font-sans text-[13px] font-semibold px-4 py-2 rounded-full bg-ink text-white transition-colors"
           >
             Resume
           </a>
         </div>
 
         <button
-          className="md:hidden w-8 h-8 flex flex-col gap-1.5 justify-center items-end"
+          className="md:hidden w-8 h-8 mr-2 flex flex-col gap-1.5 justify-center items-end"
           onClick={() => setMobileOpen((p) => !p)}
           aria-label="Toggle menu"
         >
@@ -195,19 +162,19 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden glass-nav border-b border-line px-6 pb-6 flex flex-col gap-4"
+          className="md:hidden glass glass-strong rounded-[28px] mt-2 max-w-6xl mx-auto p-6 flex flex-col gap-4"
         >
           {links.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className="font-sans text-sm font-medium tracking-[0.14em] uppercase text-ink/70 hover:text-orange transition-colors">
+            <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className="font-sans text-base font-medium text-ink/80 hover:text-accent transition-colors">
               {l.label}
             </a>
           ))}
-          <a href={`${BASE}resume.pdf`} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="font-sans text-sm font-semibold tracking-[0.14em] uppercase text-orange">
+          <a href={`${BASE}resume.pdf`} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="font-sans text-base font-semibold text-accent">
             Resume
           </a>
           <div className="flex items-center gap-5 pt-1">
             {SOCIALS.map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-ink/40 hover:text-orange transition-colors">
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="text-ink/40 hover:text-accent transition-colors">
                 <s.icon size={22} />
               </a>
             ))}
@@ -220,7 +187,357 @@ const Navbar = () => {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-const Hero = () => {
+// ─── Animated hero name ───────────────────────────────────────────────────────
+// The letters sweep in from the right while fading up out of a blur. Both i's
+// in "Tiwari" start without their dots; two pink dots then drop in. One lands
+// on the first i and hops across w, a and r to claim the last i, the other
+// drops into the spot it left. Both do a final hop together, ripple, and cool
+// from pink to ink.
+
+const PINK = "#D83995";
+const INK = "#0F1B24";
+
+type DotGeo = { cx: number; cy: number; d: number };
+type Box = { cx: number; left: number; right: number; top: number };
+type Geo = { dots: [DotGeo, DotGeo]; last: Box[]; em: number };
+
+const useDot = () => ({
+  x: useMotionValue(0),
+  y: useMotionValue(0),
+  sx: useMotionValue(1),
+  sy: useMotionValue(1),
+  o: useMotionValue(0),
+  c: useMotionValue(PINK),
+  k: useMotionValue(1), // overall size
+});
+type Dot = ReturnType<typeof useDot>;
+
+const FIRST = "Shashwat";
+const LAST = ["T", "ı", "w", "a", "r", "ı"]; // dotless i (U+0131); dots are drawn separately
+
+const HeroName = ({ start }: { start: boolean }) => {
+  const reduce = useReducedMotion();
+  const h1 = useRef<HTMLHeadingElement>(null);
+  const letters = useRef<(HTMLSpanElement | null)[]>([]);
+  const baseline = useRef<HTMLSpanElement>(null);
+  const [geo, setGeo] = useState<Geo | null>(null);
+  const a = useDot();
+  const b = useDot();
+
+  // Measure where each tittle belongs, using the font's real glyph metrics.
+  useEffect(() => {
+    const el = h1.current;
+    if (!el) return;
+    const measure = () => {
+      const cs = getComputedStyle(el);
+      const size = parseFloat(cs.fontSize);
+      const ctx = document.createElement("canvas").getContext("2d");
+      if (!ctx || !baseline.current) return;
+      ctx.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+      const m = (ch: string) => ctx.measureText(ch);
+      const iAsc = m("i").actualBoundingBoxAscent;
+      const stem = m("ı");
+      const xh = stem.actualBoundingBoxAscent;
+      const stemW = stem.actualBoundingBoxLeft + stem.actualBoundingBoxRight;
+      // Tittle: a touch wider than the stem, sitting with its top at the i's ascent.
+      const d = Math.min(stemW * 1.12, (iAsc - xh) * 0.8);
+      const base = baseline.current.offsetTop;
+      const center = (i: number) => {
+        const s = letters.current[i];
+        return s ? s.offsetLeft + s.offsetWidth / 2 : 0;
+      };
+      const dotY = base - iAsc + d / 2;
+      // Letter indexes in LAST: 1 = first ı, 2-4 = w a r, 5 = last ı
+      const off = FIRST.length;
+      setGeo({
+        em: size,
+        dots: [
+          { cx: center(off + 1), cy: dotY, d },
+          { cx: center(off + 5), cy: dotY, d },
+        ],
+        last: LAST.map((ch, k) => {
+          const sp = letters.current[off + k];
+          const left = sp ? sp.offsetLeft : 0;
+          const w = sp ? sp.offsetWidth : 0;
+          return { cx: left + w / 2, left, right: left + w, top: base - m(ch === "ı" ? "ı" : ch).actualBoundingBoxAscent };
+        }),
+      });
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const ready = !!geo;
+  const [played, setPlayed] = useState(false);
+
+  useEffect(() => {
+    if (!geo || played) return;
+    if (reduce) {
+      [a, b].forEach((dot) => { dot.o.set(1); dot.c.set(INK); });
+      setPlayed(true);
+      return;
+    }
+    if (!start) return;
+    setPlayed(true);
+
+    let dead = false;
+    const running: { stop: () => void }[] = [];
+    const go = <T,>(p: T) => { running.push(p as unknown as { stop: () => void }); return p; };
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const em = geo.em;
+    const [g1, g2] = geo.dots;
+
+    // Offsets are relative to each dot's resting place.
+    const squash = (dot: Dot, k: number, dur = 0.32) =>
+      Promise.all([
+        go(animate(dot.sx, [1, 1 + 0.45 * k, 1 - 0.12 * k, 1], { duration: dur, ease: "easeOut" })),
+        go(animate(dot.sy, [1, 1 - 0.45 * k, 1 + 0.14 * k, 1], { duration: dur, ease: "easeOut" })),
+      ]);
+    const hop = (dot: Dot, toX: number, toY: number, dur: number, lift: number) => {
+      const fromY = dot.y.get();
+      const apex = Math.min(fromY, toY) - lift;
+      return Promise.all([
+        go(animate(dot.x, toX, { duration: dur, ease: "linear" })),
+        go(animate(dot.y, [fromY, apex, toY], { duration: dur, times: [0, 0.5, 1], ease: ["easeOut", "easeIn"] })),
+        // stretch along the direction of travel mid-air
+        go(animate(dot.sy, [1, 1.18, 1.18, 0.95], { duration: dur, times: [0, 0.25, 0.75, 1] })),
+        go(animate(dot.sx, [1, 0.88, 0.88, 1.05], { duration: dur, times: [0, 0.25, 0.75, 1] })),
+      ]);
+    };
+    const drop = (dot: Dot, dur: number) =>
+      Promise.all([
+        go(animate(dot.o, 1, { duration: dur * 0.4 })),
+        go(animate(dot.y, 0, { duration: dur, ease: [0.55, 0, 1, 0.45] })),
+        go(animate(dot.sy, [1, 1.3, 1.3], { duration: dur })),
+        go(animate(dot.sx, [1, 0.85, 0.85], { duration: dur })),
+      ]);
+    // Landing on an i: one firm squash and settle, no extra hops.
+    const settle = (dot: Dot) => squash(dot, 0.9, 0.38);
+
+    // Helpers in absolute h1 coordinates: where should this dot's centre be?
+    const L = geo.last; // 0 T, 1 ı, 2 w, 3 a, 4 r, 5 ı
+    const rest = (dot: Dot) => (dot === a ? g1 : g2);
+    const at = (dot: Dot, X: number, Y: number) => ({ x: X - rest(dot).cx, y: Y - rest(dot).cy });
+    const onTop = (k: number) => L[k].top - g1.d / 2; // centre Y when sitting on a letter
+    const place = (dot: Dot, X: number, Y: number) => { const o = at(dot, X, Y); dot.x.set(o.x); dot.y.set(o.y); };
+    const hopTo = (dot: Dot, X: number, Y: number, dur: number, lift: number) => {
+      const o = at(dot, X, Y);
+      return hop(dot, o.x, o.y, dur, lift);
+    };
+    const dropTo = (dot: Dot, dur: number) =>
+      Promise.all([
+        go(animate(dot.o, 1, { duration: dur * 0.4 })),
+        go(animate(dot.y, dot.y.get() + 2.3 * em, { duration: dur, ease: [0.55, 0, 1, 0.45] })),
+        go(animate(dot.sy, [1, 1.3, 1.3], { duration: dur })),
+        go(animate(dot.sx, [1, 0.85, 0.85], { duration: dur })),
+      ]);
+
+    // ── Choreography 1: the traveller ──────────────────────────────────────
+    // b lands on the first i, hops w → r and leaps onto the last i; a drops
+    // into the spot b left.
+    const traveller = async () => {
+      place(b, g1.cx, g1.cy - 2.2 * em);
+      place(a, g1.cx, g1.cy - 2.4 * em);
+      await drop(b, 0.55);
+      if (dead) return;
+      await squash(b, 1);
+      const aDone = (async () => {
+        await wait(260);
+        if (dead) return;
+        await drop(a, 0.6);
+        if (dead) return;
+        await settle(a);
+      })();
+      for (const k of [2, 4]) {
+        if (dead) return;
+        await hopTo(b, L[k].cx, onTop(k), 0.36, 0.42 * em);
+        await squash(b, 0.6, 0.2);
+      }
+      if (dead) return;
+      await hop(b, 0, 0, 0.5, 0.75 * em);
+      await settle(b);
+      await aDone;
+    };
+
+    // ── Choreography 2: the collision ──────────────────────────────────────
+    // Two small dots land close together: one just right of the w's middle
+    // peak, one on the r's top-left corner. They spring at each other, collide
+    // mid-air over the a, and ricochet onto their i's, growing to full size.
+    const collision = async () => {
+      const d = g1.d;
+      const SMALL = 0.62;
+      a.k.set(SMALL);
+      b.k.set(SMALL);
+      const xa = L[2].cx + d * 0.35;
+      const xb = L[4].left + d * 0.35;
+      place(a, xa, onTop(2) - 2.3 * em);
+      place(b, xb, onTop(4) - 2.3 * em);
+      const land = async (dot: Dot, delay: number) => {
+        await wait(delay);
+        if (dead) return;
+        await dropTo(dot, 0.55);
+        if (dead) return;
+        await squash(dot, 0.9, 0.3);
+      };
+      await Promise.all([land(a, 0), land(b, 160)]);
+      if (dead) return;
+      await wait(160);
+
+      // crouch, then leap at each other; they grow as they fly
+      await Promise.all([squash(a, 0.8, 0.22), squash(b, 0.8, 0.22)]);
+      const HIT = 0.82;
+      const gap = (d * HIT) / 2; // centres touch when they are one diameter apart
+      const mid = (xa + xb) / 2;
+      const hitY = Math.min(onTop(2), onTop(4)) - 0.42 * em;
+      const fly = (dot: Dot, X: number) => {
+        const o = at(dot, X, hitY);
+        return Promise.all([
+          go(animate(dot.x, o.x, { duration: 0.26, ease: "linear" })),
+          go(animate(dot.y, o.y, { duration: 0.26, ease: [0.2, 0.7, 0.4, 1] })), // decelerates toward the apex
+          go(animate(dot.k, HIT, { duration: 0.26, ease: "easeOut" })),
+          go(animate(dot.sx, [1, 0.9, 1.08], { duration: 0.26 })),
+          go(animate(dot.sy, [1, 1.12, 0.94], { duration: 0.26 })),
+        ]);
+      };
+      await Promise.all([fly(a, mid - gap), fly(b, mid + gap)]);
+      if (dead) return;
+
+      // impact: flatten against each other, then spring back
+      await Promise.all(
+        [a, b].map((dot) =>
+          Promise.all([
+            go(animate(dot.sx, [1.08, 0.62, 1.12, 1], { duration: 0.24, times: [0, 0.3, 0.7, 1] })),
+            go(animate(dot.sy, [0.94, 1.32, 0.92, 1], { duration: 0.24, times: [0, 0.3, 0.7, 1] })),
+          ]),
+        ),
+      );
+      if (dead) return;
+
+      // ricochet home, reaching full size on the way
+      const home = async (dot: Dot, dur: number, lift: number) => {
+        await Promise.all([hop(dot, 0, 0, dur, lift), go(animate(dot.k, 1, { duration: dur, ease: "easeOut" }))]);
+        await settle(dot);
+      };
+      await Promise.all([home(a, 0.5, 0.3 * em), home(b, 0.55, 0.35 * em)]);
+    };
+
+    // ── Choreography 3: the relay ──────────────────────────────────────────
+    // Following the letters' right-to-left entrance, both dots come in from
+    // the right. b hops straight onto the last i; a keeps going over r and w
+    // to reach the first i.
+    const relay = async () => {
+      const startX = L[5].right + 0.9 * em;
+      const floor = onTop(4);
+      place(a, startX, floor - 2.3 * em);
+      place(b, startX, floor - 2.3 * em);
+      const run1 = async () => {
+        await dropTo(a, 0.5);
+        if (dead) return;
+        await squash(a, 1, 0.26);
+        for (const k of [4, 2]) {
+          if (dead) return;
+          await hopTo(a, L[k].cx, onTop(k), 0.36, 0.45 * em);
+          await squash(a, 0.6, 0.2);
+        }
+        if (dead) return;
+        await hop(a, 0, 0, 0.45, 0.6 * em);
+        await settle(a);
+      };
+      const run2 = async () => {
+        await wait(520);
+        if (dead) return;
+        await dropTo(b, 0.5);
+        if (dead) return;
+        await squash(b, 1, 0.26);
+        await hop(b, 0, 0, 0.5, 0.7 * em);
+        await settle(b);
+      };
+      await Promise.all([run1(), run2()]);
+    };
+
+    // Rotate through the routines on each visit, starting somewhere random.
+    const routines = [traveller, collision, relay];
+    let pick = Math.floor(Math.random() * routines.length);
+    try {
+      const prev = localStorage.getItem("name-dots");
+      if (prev !== null) pick = (Number(prev) + 1) % routines.length;
+      localStorage.setItem("name-dots", String(pick));
+    } catch { /* storage blocked: random is fine */ }
+    // ?dots=1|2|3 forces one routine, handy for reviewing them one at a time
+    const forced = Number(new URLSearchParams(location.search).get("dots"));
+    if (forced >= 1 && forced <= routines.length) pick = forced - 1;
+
+    const run = async () => {
+      await routines[pick]();
+      if (dead) return;
+
+      // a short beat in place, then cool from pink to ink
+      await wait(220);
+      if (dead) return;
+      [a, b].forEach((dot) => go(animate(dot.c, INK, { duration: 0.9, ease: "easeInOut" })));
+    };
+
+    // let the letters land first
+    const t = setTimeout(run, 1150);
+    return () => {
+      dead = true;
+      clearTimeout(t);
+      running.forEach((r) => r.stop?.());
+      [a, b].forEach((dot) => {
+        dot.x.set(0); dot.y.set(0); dot.sx.set(1); dot.sy.set(1); dot.o.set(1); dot.c.set(INK); dot.k.set(1);
+      });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [geo !== null, start, reduce]);
+
+  const letter = (ch: string, i: number, delay: number) => (
+    <motion.span
+      key={i}
+      ref={(n) => { letters.current[i] = n; }}
+      className="inline-block"
+      initial={reduce ? false : { opacity: 0, x: "0.55em", filter: "blur(12px)" }}
+      animate={start || reduce ? { opacity: 1, x: 0, filter: "blur(0px)" } : undefined}
+      transition={{ duration: 1.2, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {ch}
+    </motion.span>
+  );
+
+  return (
+    <h1
+      ref={h1}
+      aria-label="Shashwat Tiwari"
+      className="relative font-display font-semibold text-ink leading-[0.86] tracking-tightest"
+      style={{ fontSize: "clamp(3.6rem, 9.5vw, 8.5rem)" }}
+    >
+      <span aria-hidden className="whitespace-nowrap">
+        {FIRST.split("").map((ch, i) => letter(ch, i, i * 0.05))}
+      </span>
+      <br />
+      <span aria-hidden className="whitespace-nowrap">
+        {LAST.map((ch, k) => letter(ch, FIRST.length + k, 0.28 + k * 0.06))}
+        <span ref={baseline} className="inline-block w-0 h-0" />
+      </span>
+      {ready &&
+        [a, b].map((dot, i) => {
+          const g = geo!.dots[i];
+          return (
+            <span key={i} aria-hidden className="absolute pointer-events-none" style={{ left: g.cx - g.d / 2, top: g.cy - g.d / 2, width: g.d, height: g.d }}>
+              <motion.span
+                className="absolute inset-0 rounded-full"
+                style={{ x: dot.x, y: dot.y, scale: dot.k, scaleX: dot.sx, scaleY: dot.sy, opacity: dot.o, backgroundColor: dot.c, originY: 1 }}
+              />
+            </span>
+          );
+        })}
+    </h1>
+  );
+};
+
+const Hero = ({ start }: { start: boolean }) => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden px-6 pt-28 pb-16">
       <div className="max-w-6xl mx-auto w-full relative z-10">
@@ -233,18 +550,12 @@ const Hero = () => {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Name */}
-            <h1
-              className="font-display font-semibold text-ink leading-[0.86] tracking-tightest"
-              style={{ fontSize: "clamp(3.6rem, 9.5vw, 8.5rem)" }}
-            >
-              Shashwat<br />
-              Tiwari
-            </h1>
+            <HeroName start={start} />
 
             {/* Intro */}
             <p className="mt-7 font-sans text-lg text-ink/70 leading-relaxed max-w-lg">
               I'm a Data Analyst at 1Password in Boston and an MS Computer Science graduate from{" "}
-              <a href="#experience" className="text-ink font-semibold underline decoration-orange/50 decoration-2 underline-offset-4 hover:decoration-orange">Northeastern</a>.
+              <a href="#experience" className="text-ink font-semibold underline decoration-accent/50 decoration-2 underline-offset-4 hover:decoration-accent">Northeastern</a>.
               I work across analytics, experimentation, ML and full-stack systems, and before that I was
               an analyst at Bain &amp; Company. I'm open to full-time roles.
             </p>
@@ -257,14 +568,12 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="flex justify-center md:justify-end"
           >
-            <div className="relative">
-              {/* Orange offset accent behind */}
-              <div className="absolute -bottom-4 -right-4 w-full h-full rounded-3xl border-2 border-orange/30 pointer-events-none" />
-              {/* Photo on a purple backing */}
+            {/* Photo in a frosted glass frame */}
+            <div className="relative glass rounded-[32px] p-2.5">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="relative w-64 md:w-80 rounded-3xl overflow-hidden bg-purple ring-1 ring-black/5"
+                className="relative w-64 md:w-80 rounded-[24px] overflow-hidden bg-brand"
               >
                 <img src={`${BASE}profile.jpg`} alt="Shashwat Tiwari" className="w-full aspect-[4/5] object-cover" />
               </motion.div>
@@ -291,10 +600,10 @@ const toolGroups = [
 const hobbies = ["Soccer (Barça fan)", "Live music", "Photography", "Food hunting", "City exploring"];
 
 const AboutMe = () => (
-  <section id="about" className="py-28 md:py-36 px-6 bg-paper-2 border-y border-line">
+  <section id="about" className="py-28 md:py-36 px-6">
     <div className="max-w-6xl mx-auto">
       <div className="mb-16 md:mb-20">
-        <h2 className="font-display font-semibold text-ink leading-[0.94] tracking-tightest uppercase" style={{ fontSize: "clamp(2.1rem, 6.5vw, 5rem)" }}>
+        <h2 className="font-display font-semibold text-ink leading-[0.98] tracking-tightest" style={{ fontSize: "clamp(2.1rem, 6.5vw, 5rem)" }}>
           I build things that work,<br />
           <span className="text-ink/35">and I care why they do.</span>
         </h2>
@@ -321,12 +630,12 @@ const AboutMe = () => (
           </p>
 
           {/* Education */}
-          <div className="pt-4 flex flex-col">
+          <div className="pt-4 flex flex-col gap-3">
             {[
               { logo: `${BASE}NEU.png`, name: "Northeastern University", degree: "MS Computer Science, GPA 4.0", period: "2024 – 2026", color: "#d41c2c" },
               { logo: `${BASE}sn-logo.png`, name: "Shiv Nadar University", degree: "BS Computer Science, GPA 3.8", period: "2020 – 2024", color: "#1270b7" },
             ].map((edu) => (
-              <div key={edu.name} className="flex items-center gap-4 py-4 border-t border-line">
+              <div key={edu.name} className="flex items-center gap-4 p-4 glass rounded-[20px] lift">
                 <img src={edu.logo} alt={edu.name} className="w-11 h-11 object-contain shrink-0" referrerPolicy="no-referrer" />
                 <div>
                   <p className="font-display font-semibold text-[15px] text-ink leading-tight">{edu.name}</p>
@@ -339,16 +648,16 @@ const AboutMe = () => (
         </div>
 
         {/* Tool lists */}
-        <div className="grid grid-cols-2 gap-x-8 gap-y-9">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {toolGroups.map((g) => (
-            <div key={g.title}>
+            <div key={g.title} className="glass rounded-[20px] p-5 lift">
               <p className="font-display font-semibold text-ink text-base mb-2">{g.title}</p>
               <p className="font-sans text-sm text-ink/55 leading-relaxed">
                 {g.items.join(", ")}.
               </p>
             </div>
           ))}
-          <div className="col-span-2">
+          <div className="sm:col-span-2 glass rounded-[20px] p-5 lift">
             <p className="font-display font-semibold text-ink text-base mb-2">Beyond work</p>
             <p className="font-sans text-sm text-ink/55 leading-relaxed">
               {hobbies.join(", ")}.
@@ -418,7 +727,7 @@ const Experience = () => {
     <section id="experience" className="py-28 md:py-36 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-14 md:mb-20">
-          <h2 className="font-display font-semibold text-ink leading-[0.9] tracking-tightest uppercase" style={{ fontSize: "clamp(2.6rem, 9vw, 7rem)" }}>
+          <h2 className="font-display font-semibold text-ink leading-[0.98] tracking-tightest" style={{ fontSize: "clamp(2.6rem, 9vw, 7rem)" }}>
             Experience
           </h2>
           <p className="mt-5 font-sans text-lg text-ink/60 max-w-xl leading-relaxed">
@@ -426,6 +735,7 @@ const Experience = () => {
           </p>
         </div>
 
+        <div className="glass rounded-[28px] p-7 md:p-10">
         <ol
           className="relative flex flex-col md:flex-row"
           onMouseLeave={() => setActive(null)}
@@ -447,7 +757,7 @@ const Experience = () => {
                 <span
                   aria-hidden
                   className={`absolute left-0 top-1 md:top-0 w-[15px] h-[15px] rounded-full border-2 transition-all duration-300 ${
-                    isActive ? "bg-orange border-orange scale-125" : "bg-paper border-ink/30"
+                    isActive ? "bg-accent border-accent scale-125" : "bg-white border-ink/30"
                   }`}
                 />
 
@@ -455,7 +765,7 @@ const Experience = () => {
                   type="button"
                   onClick={() => setActive(i)}
                   aria-expanded={isActive}
-                  className="text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 rounded-md"
+                  className="text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 rounded-md"
                 >
                   <span className="block font-mono text-xs font-medium" style={{ color: exp.companyColor }}>
                     {exp.period}
@@ -494,6 +804,7 @@ const Experience = () => {
             );
           })}
         </ol>
+        </div>
       </div>
     </section>
   );
@@ -603,42 +914,124 @@ const projectsData = [
 // Cinematic carousel: a strip that never stops sliding, clipped into a curved
 // "cinema screen" shape. The ends are tall; the top edge dips (U) and the bottom
 // edge rises (∩) toward the centre, so the middle is the narrowest point.
-const ProjectCarousel = ({ onPick }: { onPick: (name: string) => void }) => (
-  <div className="relative">
-    <svg width="0" height="0" className="absolute" aria-hidden>
-      <defs>
-        <clipPath id="cinema-curve" clipPathUnits="objectBoundingBox">
-          <path d="M0,0 Q0.5,0.26 1,0 L1,1 Q0.5,0.74 0,1 Z" />
-        </clipPath>
-      </defs>
-    </svg>
+// Curve geometry shared by the clip path and the hover stroke. The top edge is
+// y = DIP·H·4u(1-u) and the bottom edge mirrors it, where u = x / width.
+const CURVE_DIP = 0.13;
 
-    <div className="overflow-hidden" style={{ clipPath: "url(#cinema-curve)" }}>
-      <div className="marquee-track marquee-track--slow">
-        {[...projectsData, ...projectsData].map((proj, i) => (
-          <div key={`${proj.name}-${i}`} className="shrink-0 pr-4 md:pr-5" aria-hidden={i >= projectsData.length}>
-            <button
-              type="button"
-              tabIndex={i >= projectsData.length ? -1 : 0}
-              onClick={() => onPick(proj.name)}
-              className="group relative flex flex-col items-center justify-center gap-2 w-[200px] h-[220px] md:w-[280px] md:h-[300px] px-6 bg-dark text-center transition-colors hover:bg-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-orange"
-            >
-              <span className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.14em] text-orange-light">{proj.category}</span>
-              <span className="font-display font-semibold text-2xl md:text-3xl text-cream tracking-tight leading-tight transition-colors group-hover:text-orange">
-                {proj.name}
-              </span>
-            </button>
-          </div>
-        ))}
+type TileHover = { key: number; left: number; right: number; w: number; h: number; on: boolean };
+
+// The hover stroke for a tile: one line traced along the curved top edge
+// (left to right) and one up the right edge (bottom to top), meeting at the
+// top-right corner. It is drawn outside the clip so the curve can't hide it.
+const TileStroke = ({ t }: { t: TileHover }) => {
+  const yTop = (x: number) => CURVE_DIP * t.h * 4 * (x / t.w) * (1 - x / t.w) + 1;
+  const pts = Array.from({ length: 24 }, (_, i) => {
+    const x = t.left + ((t.right - t.left) * i) / 23;
+    return `${x.toFixed(1)},${yTop(x).toFixed(1)}`;
+  });
+  const rx = t.right - 1;
+  return (
+    <svg
+      className="tile-stroke absolute inset-0 pointer-events-none z-10"
+      width={t.w}
+      height={t.h}
+      style={{ opacity: t.on ? 1 : 0 }}
+      aria-hidden
+    >
+      <polyline points={pts.join(" ")} pathLength={1} />
+      <line x1={rx} y1={t.h - yTop(rx) + 2} x2={rx} y2={yTop(rx) - 1} pathLength={1} />
+    </svg>
+  );
+};
+
+// Cinematic carousel: a strip that never stops sliding, clipped into a curved
+// "cinema screen" shape. The ends are tall; the top edge dips (U) and the bottom
+// edge rises (∩) toward the centre, so the middle is the narrowest point.
+const ProjectCarousel = ({ onPick }: { onPick: (name: string) => void }) => {
+  const frame = useRef<HTMLDivElement>(null);
+  const tile = useRef<HTMLButtonElement | null>(null);
+  const raf = useRef(0);
+  const [hover, setHover] = useState<TileHover | null>(null);
+
+  // Where the given tile sits inside the carousel frame right now.
+  const measure = (el: HTMLElement) => {
+    const box = frame.current!.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return {
+      left: Math.max(0, r.left - box.left),
+      right: Math.min(box.width, r.right - box.left),
+      w: box.width,
+      h: box.height,
+    };
+  };
+
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+
+  const enter = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    if (!frame.current) return;
+    cancelAnimationFrame(raf.current);
+    tile.current = e.currentTarget;
+    const pos = measure(e.currentTarget);
+    setHover((prev) => ({ key: (prev?.key ?? 0) + 1, ...pos, on: true }));
+  };
+
+  // On leave the carousel starts sliding again, so the fading stroke rides
+  // along with its tile until the fade has finished.
+  const leave = () => {
+    setHover((prev) => (prev ? { ...prev, on: false } : prev));
+    const el = tile.current;
+    if (!el || !frame.current) return;
+    const until = performance.now() + 1050;
+    const follow = () => {
+      if (!frame.current) return;
+      const pos = measure(el);
+      setHover((prev) => (prev && !prev.on ? { ...prev, ...pos } : prev));
+      if (performance.now() < until) raf.current = requestAnimationFrame(follow);
+    };
+    raf.current = requestAnimationFrame(follow);
+  };
+
+  return (
+    <div className="relative" ref={frame}>
+      <svg width="0" height="0" className="absolute" aria-hidden>
+        <defs>
+          <clipPath id="cinema-curve" clipPathUnits="objectBoundingBox">
+            <path d="M0,0 Q0.5,0.26 1,0 L1,1 Q0.5,0.74 0,1 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
+      <div className="overflow-hidden" style={{ clipPath: "url(#cinema-curve)" }}>
+        <div className="marquee-track marquee-track--slow">
+          {[...projectsData, ...projectsData].map((proj, i) => (
+            <div key={`${proj.name}-${i}`} className="shrink-0 pr-4 md:pr-5" aria-hidden={i >= projectsData.length}>
+              <button
+                type="button"
+                tabIndex={i >= projectsData.length ? -1 : 0}
+                onClick={() => onPick(proj.name)}
+                onMouseEnter={enter}
+                onMouseLeave={leave}
+                className="group relative flex flex-col items-center justify-center gap-2 w-[200px] h-[220px] md:w-[280px] md:h-[300px] px-6 bg-dark text-center transition-colors hover:bg-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                <span className="font-mono text-[10px] md:text-[11px] uppercase tracking-[0.14em] text-accent-light">{proj.category}</span>
+                <span className="font-display font-semibold text-2xl md:text-3xl text-cream tracking-tight leading-tight transition-colors group-hover:text-accent">
+                  {proj.name}
+                </span>
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {hover && <Fragment key={hover.key}><TileStroke t={hover} /></Fragment>}
     </div>
-  </div>
-);
+  );
+};
 
 const ProjectRow = ({ proj, flip }: { proj: (typeof projectsData)[number]; flip: boolean }) => (
   <div
     id={`project-${proj.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
-    className="scroll-mt-28 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center py-12 border-t border-line first:border-t-0 first:pt-0"
+    className="scroll-mt-28 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 items-center p-6 md:p-10 glass rounded-[28px] lift"
   >
     <div className={flip ? "md:order-2" : ""}>
       <h3 className="font-display font-semibold text-3xl md:text-4xl text-ink leading-tight mb-4">{proj.name}</h3>
@@ -649,12 +1042,12 @@ const ProjectRow = ({ proj, flip }: { proj: (typeof projectsData)[number]; flip:
       {(proj.repo || proj.href) && (
         <div className="flex items-center gap-6 mt-6">
           {proj.href && (
-            <a href={proj.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-orange hover:text-ink transition-colors">
+            <a href={proj.href} target="_blank" rel="noopener noreferrer" className="hover-line inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink text-white font-sans text-sm font-semibold transition-colors">
               <LinkIcon className="w-4 h-4" /> Live site
             </a>
           )}
           {proj.repo && (
-            <a href={proj.repo} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink/70 hover:text-orange transition-colors">
+            <a href={proj.repo} target="_blank" rel="noopener noreferrer" className="hover-line inline-flex items-center gap-2 px-4 py-2 rounded-full glass font-sans text-sm font-semibold text-ink/80 hover:text-accent transition-colors">
               <GitHubIcon size={16} /> Source code
             </a>
           )}
@@ -667,11 +1060,11 @@ const ProjectRow = ({ proj, flip }: { proj: (typeof projectsData)[number]; flip:
         <img
           src={proj.image}
           alt={proj.name}
-          className="w-full aspect-[16/10] object-cover object-top rounded-2xl ring-1 ring-black/10 bg-dark"
+          className="w-full aspect-[16/10] object-cover object-top rounded-[20px] ring-1 ring-black/5 bg-dark"
           loading="lazy"
         />
       ) : (
-        <div className="w-full aspect-[16/10] rounded-2xl bg-dark flex items-center justify-center">
+        <div className="w-full aspect-[16/10] rounded-[20px] bg-gradient-to-br from-dark via-[#0b3a52] to-[#4a1840] flex items-center justify-center">
           <span className="font-display font-semibold text-3xl md:text-4xl text-cream tracking-tight">{proj.name}</span>
         </div>
       )}
@@ -695,10 +1088,10 @@ const Projects = () => {
   };
 
   return (
-    <section id="projects" className="py-28 md:py-36 bg-paper-2 border-y border-line">
+    <section id="projects" className="py-28 md:py-36">
       <div className="max-w-6xl mx-auto px-6">
         <div className="mb-14 md:mb-16">
-          <h2 className="font-display font-semibold text-ink leading-[0.86] tracking-tightest uppercase" style={{ fontSize: "clamp(3rem, 12vw, 9rem)" }}>
+          <h2 className="font-display font-semibold text-ink leading-[0.98] tracking-tightest" style={{ fontSize: "clamp(3rem, 12vw, 9rem)" }}>
             Projects
           </h2>
           <p className="mt-5 font-sans text-lg text-ink/60 max-w-xl leading-relaxed">
@@ -721,12 +1114,12 @@ const Projects = () => {
                 aria-selected={on}
                 aria-controls="project-panel"
                 onClick={() => setTab(d.id)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-sans text-sm font-semibold border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orange/50 ${
-                  on ? "bg-ink text-paper border-ink" : "bg-transparent text-ink/70 border-ink/15 hover:border-ink/40 hover:text-ink"
+                className={`hover-line inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-sans text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+                  on ? "border tab-on text-white" : "border border-ink/10 bg-white/15 text-ink/55 hover:text-ink hover:bg-white/30"
                 }`}
               >
                 {d.label}
-                <span className={`font-mono text-[11px] ${on ? "text-orange-light" : "text-ink/40"}`}>{count}</span>
+                <span className={`font-mono text-[11px] ${on ? "text-accent-light" : "text-ink/35"}`}>{count}</span>
               </button>
             );
           })}
@@ -739,7 +1132,7 @@ const Projects = () => {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col"
+          className="flex flex-col gap-6"
         >
           {visible.map((proj, i) => (
             <Fragment key={proj.name}><ProjectRow proj={proj} flip={i % 2 === 1} /></Fragment>
@@ -751,7 +1144,7 @@ const Projects = () => {
             href="https://github.com/shashhwatiwari"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 font-sans text-sm font-semibold text-ink/70 hover:text-orange transition-colors"
+            className="hover-line inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass font-sans text-sm font-semibold text-ink/80 hover:text-accent transition-colors"
           >
             <Github className="w-4 h-4" /> More on GitHub
           </a>
@@ -766,10 +1159,10 @@ const Projects = () => {
 const GitHubActivity = () => (
   <section className="py-24 px-6">
     <div className="max-w-6xl mx-auto">
-      <h2 className="mb-10 font-display font-semibold text-ink leading-[0.9] tracking-tightest uppercase" style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}>
+      <h2 className="mb-10 font-display font-semibold text-ink leading-[0.98] tracking-tightest" style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}>
         On GitHub
       </h2>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto glass rounded-[28px] p-6 md:p-8">
         <img
           src="https://ghchart.rshah.org/FF6B35/shashhwatiwari"
           alt="GitHub contribution chart"
@@ -784,12 +1177,12 @@ const GitHubActivity = () => (
 // ─── Resume ───────────────────────────────────────────────────────────────────
 
 const Resume = () => (
-  <section id="resume" className="py-24 px-6 border-t border-line">
-    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10">
+  <section id="resume" className="py-24 px-6">
+    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 glass rounded-[28px] p-8 md:p-12">
       <img
         src={`${BASE}resume-preview.png`}
         alt="Resume preview"
-        className="w-40 rounded-xl border border-line shrink-0"
+        className="w-40 rounded-[16px] ring-1 ring-black/5 shadow-[0_18px_40px_-18px_rgba(30,24,60,0.35)] shrink-0"
         loading="lazy"
       />
       <div className="flex-1">
@@ -803,7 +1196,7 @@ const Resume = () => (
           href={`${BASE}resume.pdf`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center bg-ink text-cream font-sans font-semibold text-sm tracking-[0.06em] px-7 py-3.5 rounded-full hover:bg-orange transition-colors"
+          className="hover-line inline-flex items-center bg-ink text-white font-sans font-semibold text-sm px-7 py-3.5 rounded-full shadow-[0_10px_30px_-12px_rgba(26,26,34,0.6)] transition-colors"
         >
           Open full resume
         </a>
@@ -815,11 +1208,11 @@ const Resume = () => (
 // ─── Contact ──────────────────────────────────────────────────────────────────
 
 const Contact = () => (
-  <section id="contact" className="py-32 md:py-44 px-6 bg-dark">
-    <div className="max-w-6xl mx-auto">
-      <h2 className="font-display font-semibold text-cream leading-[0.9] tracking-tightest uppercase" style={{ fontSize: "clamp(2.6rem, 9vw, 7rem)" }}>
+  <section id="contact" className="relative py-32 md:py-44 px-6">
+    <div className="relative max-w-6xl mx-auto">
+      <h2 className="font-display font-semibold text-cream leading-[0.98] tracking-tightest" style={{ fontSize: "clamp(2.6rem, 9vw, 7rem)" }}>
         Got something<br />
-        <span className="text-orange">worth making?</span>
+        <span className="text-accent">worth making?</span>
       </h2>
       <p className="mt-8 font-sans text-cream/55 leading-relaxed text-lg max-w-xl">
         I graduated this spring and I'm looking for full-time roles, available now.
@@ -828,7 +1221,7 @@ const Contact = () => (
       <div className="mt-12 flex flex-col sm:flex-row gap-4">
         <a
           href="mailto:shashhwatiwari@gmail.com"
-          className="inline-flex items-center justify-center gap-2.5 bg-orange text-white font-sans font-semibold text-base px-8 py-4 rounded-full hover:bg-orange/90 transition-colors"
+          className="hover-line inline-flex items-center justify-center gap-2.5 bg-accent text-white font-sans font-semibold text-base px-8 py-4 rounded-full shadow-[0_14px_40px_-12px_rgba(216,57,149,0.6)] hover:bg-accent/90 transition-colors"
         >
           <Mail className="w-5 h-5" /> shashhwatiwari@gmail.com
         </a>
@@ -836,7 +1229,7 @@ const Contact = () => (
           href="https://www.linkedin.com/in/shashwat-tiwari118/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2.5 border border-cream/25 text-cream font-sans font-semibold text-base px-8 py-4 rounded-full hover:border-orange hover:text-orange transition-colors"
+          className="hover-line inline-flex items-center justify-center gap-2.5 glass-dark text-cream font-sans font-semibold text-base px-8 py-4 rounded-full hover:text-accent transition-colors"
         >
           <LinkedInIcon size={20} /> LinkedIn
         </a>
@@ -848,7 +1241,7 @@ const Contact = () => (
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 const Footer = () => (
-  <footer className="bg-dark border-t border-white/10">
+  <footer role="contentinfo" className="relative">
     <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
       <div className="text-center md:text-left">
         <span className="font-display font-semibold text-cream">Shashwat Tiwari</span>
@@ -862,7 +1255,7 @@ const Footer = () => (
             target={l.label === "Email" ? undefined : "_blank"}
             rel={l.label === "Email" ? undefined : "noopener noreferrer"}
             aria-label={l.label}
-            className="text-cream/40 hover:text-orange transition-colors"
+            className="text-cream/40 hover:text-accent transition-colors"
           >
             {l.label === "Email" ? <Mail className="w-6 h-6" /> : <l.icon size={24} />}
           </a>
@@ -875,22 +1268,25 @@ const Footer = () => (
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 // ─── Intro reveal ─────────────────────────────────────────────────────────────
-// The page starts dark; a small circle opens in the middle and expands until the
-// whole site is uncovered, then the clip is removed entirely.
+// A black curtain sits on top of the site with a circular hole in its middle.
+// The hole starts as a dot and widens until the curtain is fully see-through,
+// then the curtain is removed. The site itself is never clipped or touched, so
+// nothing on it has to re-render when the intro ends (no end-of-intro flash).
 // Skipped for people who prefer reduced motion.
 
-const REVEAL_KEYFRAMES = [
-  "circle(0vmax at 50vw 50vh)",
-  "circle(0.5vmax at 50vw 50vh)",
-  "circle(0.5vmax at 50vw 50vh)",
-  "circle(150vmax at 50vw 50vh)",
-];
+const REVEAL_RADII = [0, 0.5, 0.5, 150]; // vmax
 
 export default function App() {
   const reduce = useReducedMotion();
   const [playIntro] = useState(() => !reduce);
   const [revealed, setRevealed] = useState(!playIntro);
-  const clipPath = useMotionValue(playIntro ? REVEAL_KEYFRAMES[0] : "none");
+  // The hero name starts its entrance as the circle opens up.
+  const [nameGo, setNameGo] = useState(!playIntro);
+  const radius = useMotionValue(0);
+  const curtain = useTransform(
+    radius,
+    (r) => `radial-gradient(circle ${Math.max(r, 0.001)}vmax at 50% 50%, transparent 98%, #000 100%)`,
+  );
 
   useEffect(() => {
     if (!playIntro) return;
@@ -915,40 +1311,58 @@ export default function App() {
       window.removeEventListener("keydown", blockKeys);
     };
 
-    const controls = animate(clipPath, REVEAL_KEYFRAMES, {
+    const nameTimer = setTimeout(() => setNameGo(true), 1000);
+    const controls = animate(radius, REVEAL_RADII, {
       duration: 1.9,
       times: [0, 0.2, 0.4, 1],
       ease: [0.76, 0, 0.24, 1],
       onComplete: () => {
-        clipPath.set("none");
         unlock();
         setRevealed(true);
       },
     });
     return () => {
+      clearTimeout(nameTimer);
       controls.stop();
-      clipPath.set("none");
       unlock();
     };
-  }, [playIntro, clipPath]);
+  }, [playIntro, radius]);
 
   return (
     <>
-      {!revealed && <div aria-hidden="true" className="fixed inset-0 z-0 bg-dark" />}
-      <motion.div className="relative z-10 min-h-screen bg-paper" style={{ clipPath }}>
-      <CursorDot />
+      {!revealed && (
+        <motion.div
+          aria-hidden="true"
+          className="fixed inset-0 z-[200] bg-black"
+          style={{ maskImage: curtain, WebkitMaskImage: curtain }}
+        />
+      )}
+      <div className="relative z-10 min-h-screen bg-paper">
+      <div className="ambient" aria-hidden="true" />
       <Navbar />
       <main>
-        <Hero />
+        <Hero start={nameGo} />
         <AboutMe />
         <Experience />
         <Projects />
         <GitHubActivity />
         <Resume />
-        <Contact />
+        {/* Contact and footer share one dark surface and one light field, so
+            there is no seam between them. */}
+        <div className="relative overflow-hidden bg-dark">
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(40vmax 30vmax at 85% 12%, rgba(5,147,198,0.38), transparent 70%), radial-gradient(40vmax 34vmax at 8% 78%, rgba(216,57,149,0.30), transparent 70%)",
+            }}
+          />
+          <Contact />
+          <Footer />
+        </div>
       </main>
-      <Footer />
-      </motion.div>
+      </div>
     </>
   );
 }
