@@ -266,7 +266,7 @@ const Hero = () => {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className="relative w-64 md:w-80 rounded-3xl overflow-hidden bg-purple ring-1 ring-black/5"
               >
-                <img src={`${BASE}profile.png`} alt="Shashwat Tiwari" className="w-full aspect-[4/5] object-cover" />
+                <img src={`${BASE}profile.jpg`} alt="Shashwat Tiwari" className="w-full aspect-[4/5] object-cover" />
               </motion.div>
             </div>
           </motion.div>
