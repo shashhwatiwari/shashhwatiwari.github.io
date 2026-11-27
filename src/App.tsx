@@ -7,7 +7,7 @@
  * Fonts: Clash Display (display) + General Sans (body).
  */
 
-import { motion, useSpring, useMotionValue } from "motion/react";
+import { motion, animate, useSpring, useMotionValue, useReducedMotion } from "motion/react";
 import { useState, useEffect, Fragment } from "react";
 import { Github, Mail, Link as LinkIcon } from "lucide-react";
 
@@ -874,9 +874,68 @@ const Footer = () => (
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
+// ─── Intro reveal ─────────────────────────────────────────────────────────────
+// The page starts dark; a small circle opens in the middle and expands until the
+// whole site is uncovered, then the clip is removed entirely.
+// Skipped for people who prefer reduced motion.
+
+const REVEAL_KEYFRAMES = [
+  "circle(0vmax at 50vw 50vh)",
+  "circle(0.5vmax at 50vw 50vh)",
+  "circle(0.5vmax at 50vw 50vh)",
+  "circle(150vmax at 50vw 50vh)",
+];
+
 export default function App() {
+  const reduce = useReducedMotion();
+  const [playIntro] = useState(() => !reduce);
+  const [revealed, setRevealed] = useState(!playIntro);
+  const clipPath = useMotionValue(playIntro ? REVEAL_KEYFRAMES[0] : "none");
+
+  useEffect(() => {
+    if (!playIntro) return;
+    // The circle is centred on the first screen, so start at the top.
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+
+    // Block scrolling during the intro without hiding the scrollbar, so the
+    // layout never shifts when the intro ends.
+    const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
+    const block = (e: Event) => e.preventDefault();
+    const blockKeys = (e: KeyboardEvent) => {
+      if (SCROLL_KEYS.has(e.key)) e.preventDefault();
+    };
+    const opts = { passive: false } as const;
+    window.addEventListener("wheel", block, opts);
+    window.addEventListener("touchmove", block, opts);
+    window.addEventListener("keydown", blockKeys);
+    const unlock = () => {
+      window.removeEventListener("wheel", block);
+      window.removeEventListener("touchmove", block);
+      window.removeEventListener("keydown", blockKeys);
+    };
+
+    const controls = animate(clipPath, REVEAL_KEYFRAMES, {
+      duration: 1.9,
+      times: [0, 0.2, 0.4, 1],
+      ease: [0.76, 0, 0.24, 1],
+      onComplete: () => {
+        clipPath.set("none");
+        unlock();
+        setRevealed(true);
+      },
+    });
+    return () => {
+      controls.stop();
+      clipPath.set("none");
+      unlock();
+    };
+  }, [playIntro, clipPath]);
+
   return (
-    <div className="min-h-screen bg-paper">
+    <>
+      {!revealed && <div aria-hidden="true" className="fixed inset-0 z-0 bg-dark" />}
+      <motion.div className="relative z-10 min-h-screen bg-paper" style={{ clipPath }}>
       <CursorDot />
       <Navbar />
       <main>
@@ -889,6 +948,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
-    </div>
+      </motion.div>
+    </>
   );
 }
